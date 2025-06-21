@@ -1,0 +1,14 @@
+../Core/Src/machine.c:30:6:machine_process	104	static
+../Core/Src/machine.c:489:6:cmd_set_end_cw	8	static
+../Core/Src/machine.c:507:6:cmd_set_end_ccw	8	static
+../Core/Src/machine.c:525:6:cmd_set_end_up	8	static
+../Core/Src/machine.c:543:6:cmd_set_end_down	8	static
+../Core/Src/machine.c:561:6:cmd_move_cw	16	static
+../Core/Src/machine.c:581:6:cmd_move_ccw	16	static
+../Core/Src/machine.c:604:6:cmd_move_up	16	static
+../Core/Src/machine.c:624:6:cmd_move_down	16	static
+../Core/Src/machine.c:644:6:cmd_savesun	16	static
+../Core/Src/machine.c:669:6:cmd_savetarget	48	static
+../Core/Src/machine.c:689:6:cmd_savepark	16	static
+../Core/Src/machine.c:699:7:print_mode_name	16	static
+../Core/Src/machine.c:779:6:out_learned_range	24	static

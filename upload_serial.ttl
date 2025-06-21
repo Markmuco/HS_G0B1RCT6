@@ -1,0 +1,23 @@
+; sample macro of Tera Term
+;
+; File: random.ttl
+; Description: generate the random value
+; Environment: generic
+; Update: 2006/2/11
+; Author: Yutaka Hirata
+
+  sendln "ea"
+
+  pause 3
+  
+  sendln "ua"
+
+  pause 1
+
+  ymodemsend "C:\Ac6\Workspace\HS_G0B1RCT6\Serialise\HS_G0B1RCT6.bin"
+
+  pause 1
+
+  sendln "st"
+
+  exit

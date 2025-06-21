@@ -1,0 +1,2 @@
+../Core/Src/gpio.c:38:6:MX_GPIO_Init	1
+../Core/Src/gpio.c:153:6:gps_power	2

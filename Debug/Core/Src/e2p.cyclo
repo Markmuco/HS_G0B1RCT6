@@ -1,0 +1,6 @@
+../Core/Src/e2p.c:40:6:e2p_get_serial_no	3
+../Core/Src/e2p.c:60:9:WriteStruct2eerom	1
+../Core/Src/e2p.c:80:9:ReadStruct2eerom	3
+../Core/Src/e2p.c:116:6:e2p_read	5
+../Core/Src/e2p.c:139:6:e2p_write	17
+../Core/Src/e2p.c:205:13:m24xx64_ready	1
