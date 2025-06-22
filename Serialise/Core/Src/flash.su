@@ -1,3 +1,0 @@
-../Core/Src/flash.c:28:19:stm32_flash_erase	40	static
-../Core/Src/flash.c:84:6:stm32_flash_write	40	static
-../Core/Src/flash.c:120:17:GetPage	24	static

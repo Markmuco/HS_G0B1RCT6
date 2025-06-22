@@ -1,4 +1,0 @@
-../Core/Src/crc.c:32:6:MX_CRC_Init	8	static
-../Core/Src/crc.c:58:6:HAL_CRC_MspInit	24	static
-../Core/Src/crc.c:74:6:HAL_CRC_MspDeInit	16	static
-../Core/Src/crc.c:98:10:get_stm32_serial	24	static

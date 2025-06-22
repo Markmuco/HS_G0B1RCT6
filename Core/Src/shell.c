@@ -100,6 +100,7 @@ static void sh_posx(char * argv);
 static void sh_posy(char * argv);
 static void sh_gps_debug(char * argv);
 static void sh_targettime(char * argv);
+static void sh_moonend(char * argv);
 
 static void printlist(target_properties_t tg, uint8_t tgnr);
 
@@ -189,6 +190,7 @@ static const cmd_tbl_t cmd_tbl[] =
 		{ "calymax", "calibrate Y Max", sh_ymax },
 		{ "calymin", "calibrate Y Min", sh_ymin },
 		{ "targettime", "Target time", sh_targettime },
+		{ "moonendtime", "stop time", sh_moonend },
 
 
 
@@ -1255,7 +1257,8 @@ static void sh_show(char * argv)
 	tty_printf(" GPS receiver %s valid for %d.%02dh\r\n", isGPS_ON ? "ON" : "OFF", gps_remain_valid() / 60, gps_remain_valid() % 60);
 	tty_printf(" Location latitude  %3.3f' longitude %3.3f'\r\n", vars.hwinfo.home_location.latitude, vars.hwinfo.home_location.longitude);
 	tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
-	tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
+	if (vars.hwinfo.moonend_mod != MOON_OFF)
+		tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
 
 	x = (float) (vars.eevar.actual_motor.x + vars.hwinfo.hw_offset.x) / vars.hwinfo.steps.x;
 	if (x > 360)
@@ -1294,6 +1297,10 @@ static void sh_show(char * argv)
 		tty_printf(" MaxWind              = %d\r\n", vars.hwinfo.max_windpulse);
 	else
 		tty_printf(" MaxWind              = OFF\r\n");
+	if (vars.hwinfo.moonend_mod == MOON_OFF)
+		tty_printf(" Moon tracking        disabeled\r\n");
+	else
+		tty_printf(" Moon end time        %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
 
 	tty_printf("Motor---------------------------------------\r\n");
 	tty_printf(" Step per decrees x,y = %d,%d\r\n", vars.hwinfo.steps.x, vars.hwinfo.steps.y);
@@ -1527,6 +1534,47 @@ static void f_gps(void)
 }
 
 
+/*!
+ * \brief This function finds a (partial) command in a table.
+ *
+ * \Parameters object A pointer to a tab line object.
+ *
+ * \return -.
+ */
+static void sh_moonend(char * argv)
+{
+	uint16_t hour;
+	uint16_t min;
+
+	if (shell_next_argv(&argv))
+	{
+		hour = strtol(argv, 0, 10);
+
+		if (strncmp(argv, "off", 3) == 0)
+		{
+			vars.hwinfo.moonend_mod = MOON_OFF;
+			tty_printf("Set moon tracking off\r\n");
+			WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t));
+			return;
+		}
+		if ((shell_next_argv(&argv)) && hour < 24)
+		{
+			min = strtol(argv, 0, 10);
+			if (min < 60)
+			{
+				tty_printf("Set moon end time to %d:%02d (UTC)\r\n", hour, min);
+				vars.hwinfo.moonend_mod = (hour * 60) + min;
+				WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t));
+			}
+			else
+				tty_printf("Use Moonend xx:xx or 'off'\r\n");
+		}
+		else
+			tty_printf("Use Moonend xx:xx or 'off'\r\n");
+	}
+	else
+		tty_printf("Moon end time %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
+}
 
 /*!
  * \brief This function finds a (partial) command in a table.

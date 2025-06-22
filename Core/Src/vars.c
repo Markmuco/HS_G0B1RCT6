@@ -61,6 +61,7 @@ void factory(hw_info_t * hwinfo)
 	hwinfo->track_interval = 10; // seconds
 	hwinfo->max_windpulse = 0x00; // no maxwind
 	hwinfo->sun_down_angle = 0;
+	hwinfo->moonend_mod = MOON_OFF;
 
 	// copy to real location
 	WriteStruct2Flash(hwinfo, sizeof(hw_info_t));

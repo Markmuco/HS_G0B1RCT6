@@ -54,6 +54,7 @@
 #define VERTICAL			2
 
 #define						ENABLE_MODBUS
+#define MOON_OFF			0xFF00
 
 typedef enum
 {
@@ -180,7 +181,7 @@ typedef struct Flash_variables
 	uint16_t track_interval;	// when to calculate
 	uint32_t turnback;			// decidec distance what will be rotated back on end
 
-	uint32_t spare1;				//
+	uint32_t moonend_mod;			//
 	uint32_t spare2;				//
 	uint32_t spare3;				//
 	uint32_t spare4;				//

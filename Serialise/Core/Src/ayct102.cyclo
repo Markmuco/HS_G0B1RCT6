@@ -1,3 +1,0 @@
-../Core/Src/ayct102.c:54:6:get_ayct	2
-../Core/Src/ayct102.c:74:6:AYCT_EXTI_IRQHandler	19
-../Core/Src/ayct102.c:137:6:AYCT_TIM_IRQHandler	1

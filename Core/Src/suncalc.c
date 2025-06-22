@@ -16,20 +16,22 @@
 void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_t *moonpos)
 {
     static sampa_data sampa;  //declare the SAMPA structure
+
     int result;
 
-    sampa.spa.year          = time_date.Year;
+    sampa.spa.year          = 2000 + time_date.Year;
     sampa.spa.month         = time_date.Month;
     sampa.spa.day           = time_date.Date;
     sampa.spa.hour          = time_date.Hours;
     sampa.spa.minute        = time_date.Minutes;
     sampa.spa.second        = time_date.Seconds;
+
     sampa.spa.timezone      = 0;
-    sampa.spa.delta_ut1     = 0;
-    sampa.spa.delta_t       = 66.4;
+    sampa.spa.delta_ut1     = 0.3;
+    sampa.spa.delta_t       = 66.884;
     sampa.spa.longitude     = home_pos.longitude;
     sampa.spa.latitude      = home_pos.latitude;
-    sampa.spa.elevation     = 0;
+    sampa.spa.elevation     = 1829;
     sampa.spa.pressure      = 1000;
     sampa.spa.temperature   = 11;
     sampa.spa.atmos_refract = 0.5667;
@@ -41,7 +43,6 @@ void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_
 	sampa.bird_aod     = 0.07637;
 	sampa.bird_ba      = 0.85;
 	sampa.bird_albedo  = 0.2;
-
     //call the SAMPA calculate function and pass the SAMPA structure
 
    	result = sampa_calculate(&sampa);
@@ -70,18 +71,15 @@ void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_
 //        printf("Area unshaded: %.6f percent\r\n",sampa.a_sul_pct);
 //        printf("DNI:           %.6f W/m^2\r\n",sampa.dni_sul);
 
+    	sunpos->azimuth = sampa.spa.azimuth;
+    	sunpos->elevation = 90 - sampa.spa.zenith;
+
+
+    	moonpos->azimuth = sampa.mpa.azimuth;
+    	moonpos->elevation = 90 - sampa.mpa.zenith;
     }
-
-
-
-	sunpos->azimuth = sampa.spa.azimuth;
-	sunpos->elevation = 90 - sampa.spa.zenith;
-
-
-	moonpos->azimuth = sampa.mpa.azimuth;
-	moonpos->elevation = 90 - sampa.mpa.zenith;
-
-
+    else
+    	tty_printf("Calculation error %d\r\n", result);
 }
 
 /*******************************************************************************

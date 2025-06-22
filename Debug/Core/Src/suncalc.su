@@ -1,3 +1,0 @@
-../Core/Src/suncalc.c:16:6:suncalc	32	static
-../Core/Src/suncalc.c:90:6:follow_sun	24	static
-../Core/Src/suncalc.c:122:6:follow_target	40	static

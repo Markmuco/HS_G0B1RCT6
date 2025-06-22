@@ -1,3 +1,0 @@
-../Core/Src/flash_ee.c:29:13:ReadStruct2Flash	6
-../Core/Src/flash_ee.c:69:13:WriteStruct2Flash	2
-../Core/Src/flash_ee.c:93:20:do_WriteStruct2Flash	7
