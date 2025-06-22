@@ -1,2 +1,0 @@
-../Core/Src/crc16.c:48:10:_crc16_update	0	static
-../Core/Src/crc16.c:73:10:crc16_calc	16	static

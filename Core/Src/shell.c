@@ -228,11 +228,7 @@ void shell_open(void)
 
 
 #if FLEXIBLE_SCI1 || FLEXIBLE_SCI2 || FLEXIBLE_SCI3 || FLEXIBLE_SCI4 || FLEXIBLE_SCI5 || FLEXIBLE_SCI6 || FLEXIBLE_SCI7 || FLEXIBLE_SCI8
-#ifdef ENABLE_MODBUS
-	shell_use_modbus();
-#else
 	shell_use_sci1();
-#endif
 #endif
 }
 
@@ -1259,6 +1255,7 @@ static void sh_show(char * argv)
 	tty_printf(" GPS receiver %s valid for %d.%02dh\r\n", isGPS_ON ? "ON" : "OFF", gps_remain_valid() / 60, gps_remain_valid() % 60);
 	tty_printf(" Location latitude  %3.3f' longitude %3.3f'\r\n", vars.hwinfo.home_location.latitude, vars.hwinfo.home_location.longitude);
 	tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
+	tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
 
 	x = (float) (vars.eevar.actual_motor.x + vars.hwinfo.hw_offset.x) / vars.hwinfo.steps.x;
 	if (x > 360)

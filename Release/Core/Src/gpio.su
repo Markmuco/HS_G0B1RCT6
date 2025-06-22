@@ -1,2 +1,0 @@
-../Core/Src/gpio.c:42:6:MX_GPIO_Init	72	static
-../Core/Src/gpio.c:139:6:gps_power	40	static

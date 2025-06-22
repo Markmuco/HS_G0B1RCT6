@@ -8,7 +8,7 @@
 #ifndef SUNCALC_H_
 #define SUNCALC_H_
 
-void suncalc(location_t home_pos, time_date_t time_date, coord_t * sunpos);
+void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_t *moonpos);
 
 
 #define sun_azimuth				vars.sunpos.azimuth

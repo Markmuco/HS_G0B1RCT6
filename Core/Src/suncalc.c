@@ -13,22 +13,22 @@
 #include "sampa.h"
 
 
-void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos)
+void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_t *moonpos)
 {
     static sampa_data sampa;  //declare the SAMPA structure
     int result;
 
-    sampa.spa.year          = 2025;
-    sampa.spa.month         = 6;
-    sampa.spa.day           = 6;
-    sampa.spa.hour          = 17;
-    sampa.spa.minute        = 0;
-    sampa.spa.second        = 0;
+    sampa.spa.year          = time_date.Year;
+    sampa.spa.month         = time_date.Month;
+    sampa.spa.day           = time_date.Date;
+    sampa.spa.hour          = time_date.Hours;
+    sampa.spa.minute        = time_date.Minutes;
+    sampa.spa.second        = time_date.Seconds;
     sampa.spa.timezone      = 0;
     sampa.spa.delta_ut1     = 0;
     sampa.spa.delta_t       = 66.4;
-    sampa.spa.longitude     = 5.089;
-    sampa.spa.latitude      = 52.647;
+    sampa.spa.longitude     = home_pos.longitude;
+    sampa.spa.latitude      = home_pos.latitude;
     sampa.spa.elevation     = 0;
     sampa.spa.pressure      = 1000;
     sampa.spa.temperature   = 11;
@@ -58,11 +58,11 @@ void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos)
 //        printf("Delta Psi:     %.6e degrees\r\n",sampa.spa.del_psi);
 //        printf("Delta Epsilon: %.6e degrees\r\n",sampa.spa.del_epsilon);
 //        printf("Epsilon:       %.6f degrees\r\n",sampa.spa.epsilon);
-        printf("Moon elevation:        %.6f degrees\r\n", 90 - sampa.mpa.zenith);
-        printf("Moon Azimuth:       %.6f degrees\r\n",sampa.mpa.azimuth);
-
-        printf("Sun elevation:        %.6f degrees\r\n",90 - sampa.spa.zenith);
-        printf("Sun Azimuth:       %.6f degrees\r\n",sampa.spa.azimuth);
+//        tty_printf("Moon elevation:        %.6f degrees\r\n", 90 - sampa.mpa.zenith);
+//        tty_printf("Moon Azimuth:       %.6f degrees\r\n",sampa.mpa.azimuth);
+//
+//        tty_printf("Sun elevation:        %.6f degrees\r\n",90 - sampa.spa.zenith);
+//        tty_printf("Sun Azimuth:       %.6f degrees\r\n",sampa.spa.azimuth);
 
 //        printf("Angular dist:  %.6f degrees\r\n",sampa.ems);
 //        printf("Sun Radius:    %.6f degrees\r\n",sampa.rs);
@@ -78,6 +78,8 @@ void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos)
 	sunpos->elevation = 90 - sampa.spa.zenith;
 
 
+	moonpos->azimuth = sampa.mpa.azimuth;
+	moonpos->elevation = 90 - sampa.mpa.zenith;
 
 
 }

@@ -1,3 +1,0 @@
-../Core/Src/flash.c:110:17:GetPage	8
-../Core/Src/flash.c:26:19:stm32_flash_erase	2
-../Core/Src/flash.c:76:6:stm32_flash_write	3

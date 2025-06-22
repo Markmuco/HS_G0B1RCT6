@@ -19,9 +19,9 @@
 //#define modbus_putsn(a, b)      (sci1_putsn((char*)a, b))
 //#define modbus_getc(a)          (sci1_getch((char*)a))
 
-#define modbus_putc(a)          (mp.sci_putc((char)a))
-#define modbus_putsn(a, b)      (mp.sci_putsn((char*)a, b))
-#define modbus_getc(a)          (mp.sci_getch((char*)a))
+#define modbus_putc(a)          (sci2_putc((char)a))
+#define modbus_putsn(a, b)      (sci2_putsn((char*)a, b))
+#define modbus_getc(a)          (sci2_getch((char*)a))
 
 
 #if (MODBUS_DEBUG)

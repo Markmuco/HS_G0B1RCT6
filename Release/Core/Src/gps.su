@@ -1,6 +1,0 @@
-../Core/Src/gps.c:284:16:hex_c	0	static
-../Core/Src/gps.c:294:16:get_progress	0	static
-../Core/Src/gps.c:131:13:gps_handle	32	static
-../Core/Src/gps.c:39:9:gps_process	64	static
-../Core/Src/gps.c:114:10:gps_remain_valid	8	static
-../Core/Src/gps.c:119:6:override_gps	0	static

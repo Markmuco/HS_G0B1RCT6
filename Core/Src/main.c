@@ -516,7 +516,7 @@ static void check_rdp_level(void)
 
 static void printf_bridge_fault(void)
 {
-	static bool old1, old2;
+	static bool old1=1, old2=1;
 	static uint8_t fault_tmr = NO_TIMER;
 	static uint8_t nfault_tmr = NO_TIMER;
 

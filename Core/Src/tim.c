@@ -404,6 +404,8 @@ void set_x_pwm(int16_t pwm)
 	// incoming -100 to +100
 	pwm *= -1;
 	pwm += 100;
+//	tty_printf("x=%d ",pwm);
+
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pwm);
 }
 
@@ -415,6 +417,8 @@ void set_y_pwm(int16_t pwm)
 	// incoming -100 to +100
 	pwm *= -1;
 	pwm += 100;
+
+	//tty_printf("y=%d ",pwm);
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm);
 }
 

@@ -56,7 +56,6 @@ static void isr_handler(const sci_hdl_t hdl);
 #if FLEXIBLE_SCI1 || FLEXIBLE_SCI2 || FLEXIBLE_SCI3 || FLEXIBLE_SCI4 || FLEXIBLE_SCI5 || FLEXIBLE_SCI6 || FLEXIBLE_SCI7 || FLEXIBLE_SCI8 || FLEXIBLE_CAN
 // pointer to active tty port
 fp_t fp; /*!< Function pointer to SCI functions */
-fp_t mp; /*!< Function pointer to SCI functions */
 
 #endif
 
@@ -292,10 +291,7 @@ void _write(int file, char *ptr, int len)
 static void f_sci1(sci_cb_args_t *args)
 {
 	static uint8_t esc = 0;
-#ifdef ENABLE_MODBUS
-	static uint8_t tab = 0;
-	static bool command_mode = true;
-#endif
+
 	volatile uint32_t *ram_key = (uint32_t*) RAM_KEY;
 
 	if (args->byte == ESC)
@@ -311,32 +307,6 @@ static void f_sci1(sci_cb_args_t *args)
 	}
 	else
 		esc = 0;
-
-#ifdef ENABLE_MODBUS
-	if (args->byte == TAB)
-	{
-		if (tab++ == 10)
-		{
-			tab = 0;
-			if (command_mode)
-			{
-				command_mode = false;
-				tty_puts("Modbus mode\r\n");
-				HAL_Delay(100);
-				shell_use_modbus();
-			}
-			else
-			{
-				command_mode = true;
-				shell_use_sci1();
-				tty_puts("Command mode\r\n");
-			}
-
-		}
-	}
-	else
-		tab = 0;
-#endif
 }
 
 /*
@@ -412,26 +382,6 @@ bool sci1_printf(char *format, ...)
 	return (sci_puts(SCI_CH1, (uint8_t *) str));
 }
 
-bool dummy_printf(char *format, ...)
-{
-	return false;
-}
-bool dummy_getch(char *c)
-{
-	return false;
-}
-bool dummy_putsn(char *str, uint16_t len)
-{
-	return false;
-}
-bool dummy_putc(char c)
-{
-	return false;
-}
-bool dummy_puts(char *str)
-{
-	return false;
-}
 
 #if FLEXIBLE_SCI1
 void shell_use_sci1(void)
@@ -441,26 +391,6 @@ void shell_use_sci1(void)
 	fp.sci_puts = *sci1_puts;
 	fp.sci_putsn = *sci1_putsn;
 	fp.sci_getch = *sci1_getch;
-
-	mp.sci_putc = *dummy_putc;
-	mp.sci_getch = *dummy_getch;
-	mp.sci_putsn = *dummy_putsn;
-
-}
-
-void shell_use_modbus(void)
-{
-
-	fp.sci_printf = *dummy_printf;
-	fp.sci_putc = *dummy_putc;
-	fp.sci_puts = *dummy_puts;
-	fp.sci_putsn = *dummy_putsn;
-	fp.sci_getch = *dummy_getch;
-
-	mp.sci_putc = *sci1_putc;
-	mp.sci_getch = *sci1_getch;
-	mp.sci_putsn = *sci1_putsn;
-
 }
 
 

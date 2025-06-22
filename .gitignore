@@ -1,1 +1,37 @@
-/Debug/
+# Eclipse settings
+.settings/
+
+# Build directories
+build/
+Debug/
+Release/
+Serialise/
+Modbus/
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Executables
+*.bin
+*.out
+*.hex

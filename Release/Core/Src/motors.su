@@ -1,8 +1,0 @@
-../Core/Src/motors.c:799:13:is_endX_debounce	8	static
-../Core/Src/motors.c:820:13:is_endY_debounce	8	static
-../Core/Src/motors.c:642:13:soft_start_stop	24	static
-../Core/Src/motors.c:535:13:HAL_GPIO_EXTI_Callback	16	static
-../Core/Src/motors.c:45:6:motor_process	56	static
-../Core/Src/motors.c:516:6:HAL_GPIO_EXTI_Rising_Callback	8	static
-../Core/Src/motors.c:524:6:HAL_GPIO_EXTI_Falling_Callback	8	static
-../Core/Src/motors.c:632:6:timer6_irq	0	static

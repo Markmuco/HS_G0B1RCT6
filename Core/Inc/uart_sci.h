@@ -13,7 +13,7 @@
 #define SCI_CFG_CH3_INCLUDED       (0)
 #define SCI_CFG_CH4_INCLUDED       (0)
 #define SCI_CFG_CH5_INCLUDED       (0)
-#define SCI_CFG_CH6_INCLUDED       (6)
+#define SCI_CFG_CH6_INCLUDED       (1)
 #define SCI_CFG_CH7_INCLUDED       (0)
 #define SCI_CFG_CH8_INCLUDED       (0)
 #define SCI_CFG_LPCH1_INCLUDED     (0)
@@ -162,7 +162,6 @@ bool sci1_puts(char *str);
 bool sci1_printf(char *format, ...);
 #if FLEXIBLE_SCI1
 void shell_use_sci1(void);
-void shell_use_modbus(void);
 #endif
 #endif
 

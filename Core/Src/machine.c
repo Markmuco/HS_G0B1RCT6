@@ -122,7 +122,7 @@ void machine_process(void)
 	if (timer_elapsed(vars.calc_sun_tmr))
 	{
 		timer_start(vars.calc_sun_tmr, vars.hwinfo.track_interval * 1000, NULL);
-		suncalc(vars.hwinfo.home_location, time_date, &vars.sunpos);
+		suncalc(vars.hwinfo.home_location, time_date, &vars.sunpos, &vars.moonpos);
 
 		if (((!old_out_of_range && vars.out_of_range) || (vars.sunpos.elevation < mSUN_DOWN_ANGLE && !sundown_parking)) && (vars.gps_decode == DECODING_RDY) && (st_main_mode != ST_STOP) )
 		{

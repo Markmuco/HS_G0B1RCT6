@@ -53,6 +53,8 @@
 #define HORIZONTAL			1
 #define VERTICAL			2
 
+#define						ENABLE_MODBUS
+
 typedef enum
 {
 	ST_TRACK_SUN =0,
@@ -345,7 +347,9 @@ typedef struct
 	hw_info_t hwinfo;
 	main_mode_st store_main_mode;
 	coord_t sunpos;
+	coord_t moonpos;
 	i2c_ee_t eevar;
+	uint32_t spare;	// overrun eerom function?
 
 	uint32_t wind_ppm; 				// actual wind pulses per minute
 	uint32_t lastrx_ayct102_home;

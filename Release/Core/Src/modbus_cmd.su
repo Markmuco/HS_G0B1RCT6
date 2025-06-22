@@ -1,4 +1,0 @@
-../Core/Src/modbus_cmd.c:33:6:process_modbus_slave	8	static
-../Core/Src/modbus_cmd.c:46:10:modbus_getvalue	8	static
-../Core/Src/modbus_cmd.c:185:6:modbus_setvalue	16	static
-../Core/Src/modbus_cmd.c:429:16:MBRegHoldingCB	16	static
