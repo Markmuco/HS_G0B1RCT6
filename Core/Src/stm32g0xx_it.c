@@ -222,6 +222,8 @@ void TIM16_FDCAN_IT0_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM16_FDCAN_IT0_IRQn 0 */
 
+	AYCT_TIM_IRQHandler();
+
   /* USER CODE END TIM16_FDCAN_IT0_IRQn 0 */
   HAL_TIM_IRQHandler(&htim16);
   HAL_FDCAN_IRQHandler(&hfdcan1);
@@ -270,6 +272,9 @@ void USART2_LPUART2_IRQHandler(void)
 void USART3_4_5_6_LPUART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_4_5_6_LPUART1_IRQn 0 */
+
+	sci6_callback();
+	return;
 
   /* USER CODE END USART3_4_5_6_LPUART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);

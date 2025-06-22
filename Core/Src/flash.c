@@ -9,11 +9,9 @@
 #include "flash.h"
 #include "iwdg.h"
 
-#include "uart_sci.h"
 
 
 static uint32_t GetPage(uint32_t Addr);
-
 static FLASH_EraseInitTypeDef EraseInitStruct;
 
 
@@ -30,12 +28,8 @@ HAL_StatusTypeDef stm32_flash_erase(uint32_t start, uint32_t size)
 	uint32_t FirstPage = 0, NbOfPages = 0;
 	uint32_t PageError = 0;
 
-	tty_printf("got %08X size %02X\r\n", start,size);
-
 	/* Get the 1st page to erase */
 	FirstPage = GetPage(start);
-
-	tty_printf("page %d\r\n", FirstPage);
 
 	/* Get the number of pages to erase from 1st page */
 	NbOfPages = size / FLASH_PAGE_SIZE;
@@ -45,8 +39,6 @@ HAL_StatusTypeDef stm32_flash_erase(uint32_t start, uint32_t size)
 	EraseInitStruct.Page = FirstPage;
 	EraseInitStruct.NbPages = NbOfPages;
 	EraseInitStruct.Banks = FLASH_BANK_2;
-
-	tty_printf("Erase page %d qty %d\r\n", EraseInitStruct.Page, NbOfPages);
 
 	HAL_FLASH_Unlock();
 
@@ -95,9 +87,7 @@ bool stm32_flash_write(uint32_t address, uint8_t * p_data, uint32_t size)
 
 		memcpy(&temp, p_data, sizeof(temp));
 
-		tty_printf("Write %08X\r\n", address);
-
-// write block of 2*4 bytes
+		// write block of 2*4 bytes
 		if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, address, (uint64_t) temp) != HAL_OK) /*!< Fast program a 32 row double-word (64-bit) at a specified address */
 		{
 			return (0); // fout

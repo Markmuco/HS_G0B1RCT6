@@ -509,114 +509,7 @@ bool motor_process(void)
 	return (ignore_switch_x_tmr == NO_TIMER && ignore_switch_y_tmr == NO_TIMER);
 }
 
-#if 0
 
-/**
- * @brief  EXTI line detection callback.
- * 			Encoder pulses are about 5ms
- * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
- * @retval None
- */
-static void HAL_GPIO_EXT01_Callback(uint16_t GPIO_Pin)
-{
-	extern vars_t vars;
-
-	switch (GPIO_Pin)
-	{
-
-	case MY_A_Pin:
-		position_saved = false;
-		timer_start(hal_ya_tmr, hal_ms, NULL);
-		vars.error_status &= ~ERR_HAL_YA;
-
-		if (isMY_A == isMY_B)
-			vars.eevar.actual_motor.y++;
-		else
-			vars.eevar.actual_motor.y--;
-		break;
-
-	case MY_B_Pin:
-		position_saved = false;
-		timer_start(hal_yb_tmr, hal_ms, NULL);
-		vars.error_status &= ~ERR_HAL_YB;
-
-		if (isMY_A == isMY_B)
-			vars.eevar.actual_motor.y--;
-		else
-			vars.eevar.actual_motor.y++;
-		break;
-
-
-	default:
-		break;
-	}
-}
-
-/**
- * @brief  EXTI line detection callback.
- * 			Encoder pulses are about 5ms
- * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
- * @retval None
- */
-static void HAL_GPIO_EXT23_Callback(uint16_t GPIO_Pin)
-{
-	extern vars_t vars;
-
-	switch (GPIO_Pin)
-	{
-
-	case MX_A_Pin:
-		position_saved = false;
-		timer_start(hal_xa_tmr, hal_ms, NULL);
-		vars.error_status &= ~ERR_HAL_XA;
-
-		if (isMX_A == isMX_B)
-			vars.eevar.actual_motor.x++;
-		else
-			vars.eevar.actual_motor.x--;
-		break;
-
-	case MX_B_Pin:
-		position_saved = false;
-		timer_start(hal_xb_tmr, hal_ms, NULL);
-		vars.error_status &= ~ERR_HAL_XB;
-
-		if (isMX_A == isMX_B)
-			vars.eevar.actual_motor.x--;
-		else
-			vars.eevar.actual_motor.x++;
-		break;
-
-	default:
-		break;
-	}
-}
-
-
-
-/**
- * @brief  EXTI line detection callback.
- * 			Encoder pulses are about 5ms
- * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
- * @retval None
- */
-static void HAL_GPIO_EXT4_Callback(uint16_t GPIO_Pin)
-{
-
-	switch (GPIO_Pin)
-	{
-
-
-	case RX433_Pin:
-		AYCT_EXTI_IRQHandler();
-		break;
-
-	default:
-		break;
-	}
-}
-
-#else
 /*
  *
  */
@@ -732,7 +625,7 @@ static void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		break;
 	}
 }
-#endif
+
 /*
  * Measure phase timeout
  */
@@ -769,9 +662,16 @@ static void soft_start_stop(int32_t target_x, int32_t target_y, int16_t soft)
 
 		if (actual_x > target_x)
 			actual_x--;
+#if 0
+		if (actual_x > 0)
+			DIR_X_1;
+		else
+			DIR_X_0;
 
+		set_x_pwm(abs(actual_x));
+#else
 		set_x_pwm(actual_x);
-
+#endif
 		// softstart with limiter -100..0..+100
 		if (actual_y < target_y)
 			actual_y++;
@@ -779,9 +679,20 @@ static void soft_start_stop(int32_t target_x, int32_t target_y, int16_t soft)
 		if (actual_y > target_y)
 			actual_y--;
 
+#if 0
+		if (actual_y > 0)
+			DIR_Y_1;
+		else
+			DIR_Y_0;
+
 		//tty_printf("%d ", actual_x);
 
+		set_y_pwm(abs(actual_y));
+#else
+
+
 		set_y_pwm(actual_y);
+#endif
 	}
 }
 
@@ -1054,4 +965,5 @@ int main(void)
 	return 0;
 }
 #endif
+
 

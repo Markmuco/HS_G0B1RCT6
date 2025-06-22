@@ -1,0 +1,5 @@
+../Core/Src/adc.c:30:6:MX_ADC1_Init	24	static
+../Core/Src/adc.c:84:6:HAL_ADC_MspInit	40	static
+../Core/Src/adc.c:111:6:HAL_ADC_MspDeInit	8	static
+../Core/Src/adc.c:142:19:adc_calib	8	static
+../Core/Src/adc.c:156:10:read_adapter	16	static

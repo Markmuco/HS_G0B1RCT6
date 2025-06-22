@@ -73,7 +73,8 @@
  NOTES
  CPU freq 48 Mhz
  Uart1 Onboard FTDI 115200
- Uart2 GPS 9600
+ Uart2 Modbus 115200
+ Uart6 GPS 9600
 
  IRQ0	Y ENC_A
  IRQ1	Y ENC_B
@@ -359,7 +360,7 @@ int main(void)
 
 		if (vars.gps_debug)
 		{
-			if (sci2_getch(&ch))
+			if (sci6_getch(&ch))
 				sci1_putc(ch);
 		}
 		else
@@ -515,7 +516,7 @@ static void check_rdp_level(void)
 
 static void printf_bridge_fault(void)
 {
-	static bool old;
+	static bool old1, old2;
 	static uint8_t fault_tmr = NO_TIMER;
 	static uint8_t nfault_tmr = NO_TIMER;
 
@@ -540,10 +541,15 @@ static void printf_bridge_fault(void)
 
 	if (timer_elapsed(fault_tmr) || timer_elapsed(nfault_tmr))
 	{
-		if (old != isFAULT_1)
+		if (old1 != isFAULT_1)
 		{
-			old = isFAULT_1;
-			tty_printf(" ERR Fault %d\r\n", isFAULT_1);
+			old1 = isFAULT_1;
+			tty_printf(" ERR Fault1 %d\r\n", isFAULT_1);
+		}
+		if (old2 != isFAULT_2)
+		{
+			old2 = isFAULT_2;
+			tty_printf(" ERR Fault2 %d\r\n", isFAULT_2);
 		}
 	}
 }

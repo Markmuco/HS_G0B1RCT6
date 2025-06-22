@@ -66,6 +66,8 @@ extern vars_t vars;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define nGPS_EZN_Pin GPIO_PIN_11
+#define nGPS_EZN_GPIO_Port GPIOC
 #define END_X_Pin GPIO_PIN_13
 #define END_X_GPIO_Port GPIOC
 #define MY_A_Pin GPIO_PIN_0
@@ -109,8 +111,6 @@ extern vars_t vars;
 #define MID_X_GPIO_Port GPIOA
 #define EN_Y_Pin GPIO_PIN_9
 #define EN_Y_GPIO_Port GPIOC
-#define nGPS_EZN_Pin GPIO_PIN_4
-#define nGPS_EZN_GPIO_Port GPIOD
 #define LCD_DB7_Pin GPIO_PIN_3
 #define LCD_DB7_GPIO_Port GPIOB
 #define LCD_RS_Pin GPIO_PIN_4
@@ -155,8 +155,8 @@ extern vars_t vars;
 #define LCD_BACK_ON		HAL_GPIO_WritePin(LCD_BACK_GPIO_Port, LCD_BACK_Pin, GPIO_PIN_SET)
 #define LCD_BACK_OFF	HAL_GPIO_WritePin(LCD_BACK_GPIO_Port, LCD_BACK_Pin, GPIO_PIN_RESET)
 
-#define BRIDGE_DRIVE_DIS	HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_RESET)
-#define BRIDGE_DRIVE_EN		HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_SET)
+#define BRIDGE_DRIVE_DIS	HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_SET)
+#define BRIDGE_DRIVE_EN		HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_RESET)
 
 #define GPS_0			HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_SET)
 #define GPS_1			HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_RESET)
@@ -192,8 +192,8 @@ extern vars_t vars;
 #define  isBRIGE_OFF	HAL_GPIO_ReadPin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin)
 #define  isDISPLAY_ON	HAL_GPIO_ReadPin(LCD_BACK_GPIO_Port, LCD_BACK_Pin)
 #define  isGPS_ON		(!HAL_GPIO_ReadPin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin))
-#define  isFAULT_1		(!HAL_GPIO_ReadPin(FAULT1_GPIO_Port, FAULT1_Pin))
-#define  isFAULT_2		(!HAL_GPIO_ReadPin(FAULT2_GPIO_Port, FAULT2_Pin))
+#define  isFAULT_1		(HAL_GPIO_ReadPin(FAULT1_GPIO_Port, FAULT1_Pin))
+#define  isFAULT_2		(HAL_GPIO_ReadPin(FAULT2_GPIO_Port, FAULT2_Pin))
 
 
 #define LOW_16B(x)     ((x)&0xFFFF)

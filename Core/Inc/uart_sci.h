@@ -13,7 +13,7 @@
 #define SCI_CFG_CH3_INCLUDED       (0)
 #define SCI_CFG_CH4_INCLUDED       (0)
 #define SCI_CFG_CH5_INCLUDED       (0)
-#define SCI_CFG_CH6_INCLUDED       (0)
+#define SCI_CFG_CH6_INCLUDED       (6)
 #define SCI_CFG_CH7_INCLUDED       (0)
 #define SCI_CFG_CH8_INCLUDED       (0)
 #define SCI_CFG_LPCH1_INCLUDED     (0)

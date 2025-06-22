@@ -1,0 +1,3 @@
+../Core/Src/protection.c:84:10:stm_serial	2
+../Core/Src/protection.c:42:6:set_protection	1
+../Core/Src/protection.c:64:6:check_quick	3

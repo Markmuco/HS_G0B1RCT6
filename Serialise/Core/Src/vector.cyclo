@@ -1,0 +1,6 @@
+../Core/Src/vector.c:31:6:calc_target_pos	2
+../Core/Src/vector.c:57:6:calc_mirror_pos	3
+../Core/Src/vector.c:82:13:mirror_vector	1
+../Core/Src/vector.c:106:13:reflection_vector	1
+../Core/Src/vector.c:133:13:co2vecz	9
+../Core/Src/vector.c:168:13:vecz2co	9

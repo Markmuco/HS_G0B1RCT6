@@ -1,0 +1,13 @@
+../Core/Src/rtc.c:276:13:leap_year	8	static
+../Core/Src/rtc.c:288:17:year_size	8	static
+../Core/Src/rtc.c:300:13:IsDst_EU	8	static
+../Core/Src/rtc.c:318:13:IsDst_US	8	static
+../Core/Src/rtc.c:48:6:MX_RTC_Init	8	static
+../Core/Src/rtc.c:80:6:HAL_RTC_MspInit	88	static
+../Core/Src/rtc.c:108:6:HAL_RTC_MspDeInit	0	static
+../Core/Src/rtc.c:135:6:set_rtc	32	static
+../Core/Src/rtc.c:164:6:rtc_get	40	static
+../Core/Src/rtc.c:193:6:epoch_to_datetime	16	static
+../Core/Src/rtc.c:339:6:time_stamp	40	static
+../Core/Src/rtc.c:350:10:set_dst_correction	48	static
+../Core/Src/rtc.c:380:10:get_dst_correction	48	static

@@ -13,7 +13,7 @@
 #define GPS_TIMEOUT   (120 * 1000) // 120sec.
 
 #define gps_printf		tty_printf
-#define gps_getch		sci2_getch
+#define gps_getch		sci6_getch
 
 // GPS result codes.
 typedef enum

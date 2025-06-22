@@ -113,7 +113,7 @@ void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 23;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 199;
+  htim3.Init.Period = 200;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
@@ -402,9 +402,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 void set_x_pwm(int16_t pwm)
 {
 	// incoming -100 to +100
-	// different direction for H-Bridges
+	pwm *= -1;
 	pwm += 100;
-
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pwm);
 }
 
@@ -414,7 +413,7 @@ void set_x_pwm(int16_t pwm)
 void set_y_pwm(int16_t pwm)
 {
 	// incoming -100 to +100
-
+	pwm *= -1;
 	pwm += 100;
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm);
 }
