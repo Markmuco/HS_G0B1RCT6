@@ -288,6 +288,8 @@ int main(void)
 
 	sh_ver(NULL);
 
+	FDCAN_Config();
+
 	// set protection level 1
 	check_rdp_level();
 

@@ -1,6 +1,7 @@
 "./Core/Src/adc.o"
 "./Core/Src/ayct102.o"
 "./Core/Src/build_display.o"
+"./Core/Src/can_functions.o"
 "./Core/Src/crc.o"
 "./Core/Src/crc16.o"
 "./Core/Src/e2p.o"

@@ -24,7 +24,7 @@
 #define SCI_CFG_CH8_INCLUDED       (0)
 #define SCI_CFG_CH9_INCLUDED       (0)
 #define SCI_CFG_LPCH1_INCLUDED     (0)
-#define SCI_CFG_CAN_INCLUDED	   (0)
+#define SCI_CFG_CAN_INCLUDED	   (1)
 #define SCI_CFG_USB_INCLUDED	   (0)
 
 #if (SCI_CFG_USB_INCLUDED)
@@ -70,7 +70,7 @@
 #define	FLEXIBLE_SCI8				(0) // direct tty_xx to flexible port or fix it below
 #define	FLEXIBLE_SCI9				(0) // direct tty_xx to flexible port or fix it below
 #define	FLEXIBLE_SCI_LPCH1			(0) // direct tty_xx to flexible port or fix it below
-#define	FLEXIBLE_CAN				(0) // direct tty_xx to flexible port or fix it below
+#define	FLEXIBLE_CAN				(1) // direct tty_xx to flexible port or fix it below
 #define	FLEXIBLE_USB				(0) // direct tty_xx to flexible port or fix it below
 
 #define USE_RS485					(1)

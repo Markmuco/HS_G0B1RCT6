@@ -56,7 +56,6 @@
 
 #if FLEXIBLE_CAN
 #include "can_functions.h"
-#include "canq.h"
 #endif
 #if (SCI_CFG_USB_INCLUDED)
 #if (SCI_USB_DEVICE)
@@ -1017,7 +1016,7 @@ bool sci_can_keyboard(char c) // Keyboard input comes from CAN bus
 bool sci_can_putc(char c)
 {
 	// send CAN data packet 8 bytes or rest
-	return can_send_msg(ID_SH_TX, 1, (uint8_t *) &c, CAN_RTR_DATA);
+	return can_send_msg(ID_SH_TX, 1, (uint8_t *) &c);
 }
 
 bool sci_can_puts(char *str)
@@ -1030,12 +1029,12 @@ bool sci_can_puts(char *str)
 	{
 		free = can_tx_free();
 		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE]);
 	}
 
 	free = can_tx_free();
 	if (free)
-		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE]);
 	return true;
 }
 
@@ -1048,12 +1047,12 @@ bool sci_can_putsn(char *str, uint16_t len)
 	{
 		free = can_tx_free();
 		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE]);
 	}
 
 	free = can_tx_free();
 	if (free)
-		can_send_msg(ID_SH_TX, (len % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+		can_send_msg(ID_SH_TX, (len % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE]);
 	return true;
 }
 
@@ -1074,12 +1073,12 @@ bool sci_can_printf(const char *format, ...)
 	{
 		free = can_tx_free();
 		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE, &buffer[a * CAN_DATASIZE], CAN_RTR_DATA);
+			can_send_msg(ID_SH_TX, CAN_DATASIZE, &buffer[a * CAN_DATASIZE]);
 	}
 
 	free = can_tx_free();
 	if (free)
-		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE), &buffer[a * CAN_DATASIZE], CAN_RTR_DATA);
+		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE), &buffer[a * CAN_DATASIZE]);
 	return true;
 }
 #if USE_RS485>0
@@ -1089,7 +1088,8 @@ bool sci_can_rxq_busy(void)
 }
 bool sci_can_txq_busy(void)
 {
-	return (can_tx_free() != CAN_TX_BUF_SIZE-1);
+	return 0;
+	//return (can_tx_free() != CAN_TX_BUF_SIZE-1);
 }
 #endif
 #if FLEXIBLE_CAN

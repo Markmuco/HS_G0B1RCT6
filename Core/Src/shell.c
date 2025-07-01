@@ -1240,6 +1240,8 @@ static void sh_time(char * argv)
 
 	tty_printf("%s sync: %d%%\r\n", vars.gps_system == SYS_GPS ? "GPS" : "GLONASS", vars.gps_decode);
 
+	can_send_msg(100, 4, &dt);
+
 }
 
 /*!

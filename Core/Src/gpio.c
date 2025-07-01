@@ -55,7 +55,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_DB4_Pin|LCD_DB5_Pin|LCD_DB6_Pin|DIR6_Pin

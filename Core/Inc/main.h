@@ -126,19 +126,7 @@ extern vars_t vars;
 
 /* USER CODE BEGIN Private defines */
 
-#define APP_KEY   	(0xAA55AA55)
-#define VERSION   	(0x0700FFFA)
 
-#define WAIT_KEY  	(0x55AA55AA)
-#define WAIT_KEY_1	(0x55AA5501) // Wait by usart1
-#define WAIT_KEY_2	(0x55AA5502) // Wait by usart2
-#define WAIT_KEY_3	(0x55AA5503) // Wait by usart3
-
-#define CRASH_KEY 	(0x55AA55CC)
-
-#define RAM_KEY   	(0x20000000) // RAM address
-
-#define KEY_STOP  	(0x55AA55AA)
 
 #define CS_MOTOR_1		HAL_GPIO_WritePin(CS_HBRIDGE_GPIO_Port, CS_HBRIDGE_Pin, GPIO_PIN_SET)
 #define CS_MOTOR_0		HAL_GPIO_WritePin(CS_HBRIDGE_GPIO_Port, CS_HBRIDGE_Pin, GPIO_PIN_RESET)
