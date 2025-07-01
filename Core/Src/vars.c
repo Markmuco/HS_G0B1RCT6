@@ -38,7 +38,7 @@ void factory(hw_info_t * hwinfo)
 	hwinfo->hysteresis.y = 5;
 	hwinfo->pid.repeat_ms = 5;
 	hwinfo->pid.i = 40;		// ms
-	hwinfo->pid.p = 1000;	// 1000 = 1.000
+	hwinfo->pid.p = 500;	// 1000 = 1.000
 	hwinfo->pid.d = 0;		// not used
 
 	hwinfo->pid.softstart = 500; // ms

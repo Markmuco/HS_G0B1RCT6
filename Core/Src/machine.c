@@ -39,6 +39,7 @@ void machine_process(void)
 	static uint8_t old_minute;
 	static bool old_out_of_range = false;
 	static bool sundown_parking = false;
+	static bool stop_moontracking = false;
 
 	time_date_t time_date;
 	motorpos_t tg;
@@ -292,7 +293,8 @@ void machine_process(void)
 	case ST_TRACK_TARGET_15:
 	case ST_TRACK_TARGET_16:
 
-		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+//		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != MOON_OFF) && vars.moonpos.elevation > 0))
 			show_screen = LCD_FOLLOW_TARGET;
 		else
 			show_screen = LCD_SUNDOWN;
@@ -307,12 +309,31 @@ void machine_process(void)
 				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
 				{
 					time_stamp();
-					tty_printf("%s\r\n", print_mode_name(vars.eevar.main_mode));
-					vars.out_of_range = follow_target();
+					tty_printf("Sun %s\r\n", print_mode_name(vars.eevar.main_mode));
+					vars.out_of_range = follow_target(vars.sunpos);
 					vars.max_pwm = vars.hwinfo.max_pwm;
+					stop_moontracking = false;
 				}
 				else
-					tty_printf("Track target, sundown\r\n");
+				{
+					if ((vars.hwinfo.moonend_mod != MOON_OFF) && !stop_moontracking)
+					{
+						time_stamp();
+						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
+
+						vars.out_of_range = follow_target(vars.moonpos);
+						vars.max_pwm = vars.hwinfo.max_pwm;
+
+						if (time_date.mod == vars.hwinfo.moonend_mod)
+						{
+							tty_printf("Moon stoptime %d:%02d\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
+							stop_moontracking = true;
+							vars.out_of_range = true;
+						}
+					}
+					else
+						tty_printf("Track target, pdown\r\n");
+				}
 			}
 		}
 		else
@@ -362,11 +383,29 @@ void machine_process(void)
 				{
 					time_stamp();
 					tty_printf("%s\r\n", print_mode_name(vars.eevar.main_mode));
-					vars.out_of_range = follow_target();
+					vars.out_of_range = follow_target(vars.sunpos);
 					vars.max_pwm = vars.hwinfo.max_pwm;
 				}
 				else
-					tty_printf("Track manual, sundown\r\n");
+				{
+					if ((vars.hwinfo.moonend_mod != MOON_OFF) && !stop_moontracking)
+					{
+						time_stamp();
+						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
+
+						vars.out_of_range = follow_target(vars.moonpos);
+						vars.max_pwm = vars.hwinfo.max_pwm;
+
+						if (time_date.mod == vars.hwinfo.moonend_mod)
+						{
+							tty_printf("Moon stoptime %d:%02d\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
+							stop_moontracking = true;
+							vars.out_of_range = true;
+						}
+					}
+					else
+						tty_printf("Track manual, pdown\r\n");
+				}
 			}
 		}
 		else

@@ -289,7 +289,7 @@ int main(void)
 	sh_ver(NULL);
 
 	// set protection level 1
-	//check_rdp_level();
+	check_rdp_level();
 
 	if (RCC->CSR & RCC_CSR_IWDGRSTF)
 		tty_printf("WDT reboot\r\n");

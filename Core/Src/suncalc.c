@@ -119,11 +119,11 @@ bool follow_sun(void)
  *
  *	Return True: out_of_range
  */
-bool follow_target(void)
+bool follow_target(coord_t sunmoonpos)
 {
 	motorpos_t mp;
 
-	calc_mirror_pos(&vars.hwinfo, vars.sunpos, &mp, vars.eevar.target);
+	calc_mirror_pos(&vars.hwinfo, sunmoonpos, &mp, vars.eevar.target);
 
 	// keep 1º from end points
 	if ((mp.x > stepX) && (mp.x < (maxX - stepX)) && (mp.y > stepY) && (mp.y < (maxY - stepY)))

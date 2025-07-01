@@ -31,7 +31,7 @@ void suncalc(location_t home_pos, time_date_t time_date, coord_t *sunpos, coord_
 #define target_pos_x			vars.tokeep.target.x
 #define target_pos_y			vars.tokeep.target.y
 
-bool follow_target(void);
+bool follow_target(coord_t sunmoonpos);
 bool follow_sun(void);
 
 #endif /* SUNCALC_H_ */

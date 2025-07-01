@@ -326,37 +326,28 @@ static void header(void)
 	HD44780_Puts(0, 0, buf);
 
 	if (vars.gps_decode == DECODING_RDY)
-		snprintf(buf, sizeof(buf), "SUN %7.2f %-7.2f", vars.sunpos.azimuth, vars.sunpos.elevation);
+	{
+		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+			snprintf(buf, sizeof(buf), "SUN %7.2f %-7.2f", vars.sunpos.azimuth, vars.sunpos.elevation);
+		else
+			snprintf(buf, sizeof(buf), "MOON %7.2f %-7.2f", vars.moonpos.azimuth, vars.moonpos.elevation);
+	}
 	else
 		snprintf(buf, sizeof(buf), "SUN ?? ??");
 
 	HD44780_Puts(0, 1, buf);
-#if 0
-	//toggle every 2 seconds
-	if (sec < 2 && !isEND_X && !isEND_Y)
-	{
-		x = (float) (vars.eevar.actual_motor.x + vars.hwinfo.hw_offset.x) / vars.hwinfo.steps.x;
-		if (x > 360)
-			x = x - 360;
-		y = ((float) ((vars.eevar.actual_motor.y + vars.hwinfo.hw_offset.y) / vars.hwinfo.steps.y));
 
-		snprintf(buf, sizeof(buf), "Mirror %3.1f %3.1f", x, y);
-	}
+	if (isEND_X)
+		snprintf(value_x, sizeof(value_x), "ENDX  ");
 	else
-#endif
-	{
-		if (isEND_X)
-			snprintf(value_x, sizeof(value_x), "ENDX  ");
-		else
-			snprintf(value_x, sizeof(value_x), "%ld", vars.eevar.actual_motor.x);
+		snprintf(value_x, sizeof(value_x), "%ld", vars.eevar.actual_motor.x);
 
-		if (isEND_Y)
-			snprintf(value_y, sizeof(value_y), "ENDY  ");
-		else
-			snprintf(value_y, sizeof(value_y), "%-16ld", vars.eevar.actual_motor.y);
+	if (isEND_Y)
+		snprintf(value_y, sizeof(value_y), "ENDY  ");
+	else
+		snprintf(value_y, sizeof(value_y), "%-16ld", vars.eevar.actual_motor.y);
 
-		snprintf(buf, sizeof(buf), "Mirror %s %s", value_x, value_y);
-	}
+	snprintf(buf, sizeof(buf), "Mirror %s %s", value_x, value_y);
 
 	if (++sec == 5)
 		sec = 0;
