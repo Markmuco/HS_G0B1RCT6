@@ -23,6 +23,7 @@
 
 bool can_send_msg(can_id_t id, uint8_t len, uint8_t * txdata);
 void FDCAN_Config(void);
+HAL_StatusTypeDef FDCAN_WaitForTxFifoSpace(FDCAN_HandleTypeDef *hfdcan, uint32_t timeout);
 
 
 

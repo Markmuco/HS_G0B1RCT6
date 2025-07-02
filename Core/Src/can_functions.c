@@ -75,16 +75,26 @@ bool can_send_msg(can_id_t id, uint8_t len, uint8_t *txdata)
 	}
 }
 
-/*
-* @retval Status
-*          - 0 : No pending transmission request on TxBufferIndex list.
-*          - 1 : Pending transmission request on TxBufferIndex.
-*/
-uint32_t can_tx_free(void)
+/**
+ * @brief Wait until there is space in the FDCAN Tx FIFO.
+ * @param hfdcan Pointer to FDCAN handle (e.g., &hfdcan1)
+ * @param timeout Timeout in milliseconds
+ * @retval HAL_OK if space became available
+ * @retval HAL_TIMEOUT if timeout occurred
+ */
+HAL_StatusTypeDef FDCAN_WaitForTxFifoSpace(FDCAN_HandleTypeDef *hfdcan, uint32_t timeout)
 {
-	return !HAL_FDCAN_IsTxBufferMessagePending(&hfdcan1, 1);
-}
+	uint32_t tickStart = HAL_GetTick();
 
+	while ((hfdcan->Instance->TXFQS & FDCAN_TXFQS_TFQF) != 0)
+	{
+		if ((HAL_GetTick() - tickStart) >= timeout)
+		{
+			return HAL_TIMEOUT;
+		}
+	}
+	return HAL_OK;
+}
 
 /**
  * @brief  Rx FIFO 0 callback.
@@ -99,26 +109,21 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	static FDCAN_RxHeaderTypeDef RxHeader;
 	static uint8_t RxData[8];
 
-	tty_printf("CANrx0\r\n");
-
 	if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET)
 	{
 		/* Retrieve Rx messages from RX FIFO0 */
 		if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 		{
-			_Error_Handler(__FILE__,__LINE__);
+			_Error_Handler(__FILE__, __LINE__);
 		}
 
 		// Goto Special Functions. Poll and ..
 		if ((RxHeader.Identifier < 100) && (RxHeader.IdType == FDCAN_STANDARD_ID))
 			can_100_procedure(&RxHeader, RxData);
 
-//    /* Display LEDx */
-//    if ((RxHeader.Identifier == 0x321) && (RxHeader.IdType == FDCAN_STANDARD_ID) && (RxHeader.DataLength == FDCAN_DLC_BYTES_2))
-//    {
-//      LED_Display(RxData[0]);
-//      ubKeyNumber = RxData[0];
-//    }
+		/*
+		 * Other RX actions
+		 */
 	}
 }
 
@@ -152,11 +157,6 @@ void FDCAN_Config(void)
 		Error_Handler();
 	}
 
-//	if (HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_REJECT, FDCAN_REJECT, FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE) != HAL_OK)
-//	{
-//		Error_Handler();
-//	}
-
 	/* Start the FDCAN module */
 	if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK)
 	{
@@ -167,24 +167,8 @@ void FDCAN_Config(void)
 	{
 		Error_Handler();
 	}
-
 }
 
-///*
-// *
-// */
-//void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcane)
-//{
-//	tty_printf("ERR CB %d\r\n", hcane->ErrorCode);
-//
-//	CAN->IER |= CAN_IER_FMPIE0;      // (11)        Set FIFO1 message pending IT enable
-//
-//	__HAL_CAN_ENABLE_IT(hcane, CAN_IER_TMEIE);       //!< Transmit mailbox empty interrupt //
-//	__HAL_CAN_ENABLE_IT(hcane, CAN_IER_FFIE0); /*!<FIFO Full Interrupt Enable */
-//	__HAL_CAN_DISABLE_IT(hcane, CAN_IER_ERRIE);        //!< Error Interrupt Enable   //
-//
-//	MX_CAN1_Init();
-//}
 
 /**
  * @brief  basic CAN id handling for below 100 id
@@ -394,8 +378,6 @@ static void can_100_procedure(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *pRxData
 		{
 			for (uint8_t var = 0; var < pRxHeader->DataLength; ++var)
 				sci_can_keyboard(pRxData[var]);
-
-			//byteq_put(g_handles[SCI_CH1]->rx_queue, rx_data.Data[var]);
 		}
 	}
 #endif
