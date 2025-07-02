@@ -14,7 +14,7 @@
 
   pause 1
 
-  ymodemsend "C:\Ac6\Workspace\HS_G0B1RCT6\Release\HS_G0B1RCT6.bin"
+  ymodemsend "C:\Ac6\Workspace\HS_G0B1RCT6\Release\20250013.bin"
 
   pause 1
 

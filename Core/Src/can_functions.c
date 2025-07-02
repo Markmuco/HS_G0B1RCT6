@@ -326,12 +326,10 @@ static void can_100_procedure(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *pRxData
 	{
 		if (compare_serial(pRxData))
 		{
-			sci1_printf("Jump to bootloader\r\n");
+			//sci1_printf("Jump to bootloader\r\n");
 
 			*p_key = CAN_KEY;
 			*p_serial = CAN_SERIAL;
-
-			HAL_Delay(100);
 
 			NVIC_SystemReset();
 		}
