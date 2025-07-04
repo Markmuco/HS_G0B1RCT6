@@ -90,6 +90,7 @@ void modbus_slave(void)
 			debug_msg("Answer with len %d\r\n", modbus_transaction.rx_buf[SLMODBUS_LEN]);
 			debug_msg("Ask register %d\r\n", modbus_transaction.rx_buf[SLMODBUS_REGISTER_LSB] | modbus_transaction.rx_buf[SLMODBUS_REGISTER_MSB] << 8);
 
+			memcpy(modbus_transaction.tx_buf, modbus_transaction.rx_buf, 8);
 			modbus_transaction.tx_len = modbus_transaction.rx_buf[SLMODBUS_LEN] * 2;
 
 			// If data handling correct replay with Function

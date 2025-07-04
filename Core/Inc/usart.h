@@ -48,7 +48,7 @@ void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-void MX_USART2_UART_DeInit(void);
+void MX_USART6_UART_DeInit(void);
 
 /* USER CODE END Prototypes */
 

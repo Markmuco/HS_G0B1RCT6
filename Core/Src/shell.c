@@ -2123,6 +2123,7 @@ static void sh_serial(char * argv)
 static void sh_remote(char * argv)
 {
 	uint16_t val;
+	flash_err_t err;
 
 	if (shell_next_argv(&argv))
 	{
@@ -2134,8 +2135,8 @@ static void sh_remote(char * argv)
 				vars.hwinfo.ayct102_home_1 = vars.lastrx_ayct102_home;
 				tty_printf("Saving remote a:%d\r\n", vars.hwinfo.ayct102_home_1);
 
-				if (WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t)))
-					tty_printf("Error saving flash");
+				if ((err = WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t))))
+					tty_printf("Error saving flash %d\r\n", err);
 			}
 			else
 				tty_printf("No remote received\r\n");
@@ -2405,7 +2406,7 @@ static void sh_desync(char * argv)
 	gps_power(true);
 //	GPS_1;
 	HAL_Delay(20);
-	MX_USART2_UART_Init();
+	MX_USART6_UART_Init();
 }
 
 /*!
@@ -2423,6 +2424,7 @@ void sh_ver(char *argv)
 	app_info_t *p_bl_info = (app_info_t*) Bootloader_info;
 
 	tty_printf("Bootloader %X.%02X\r\n", ((p_bl_info->version >> 24) & 0xFF), ((p_bl_info->version >> 16) & 0xFF));
+	sci2_printf("Bootloader %X.%02X\r\n", ((p_bl_info->version >> 24) & 0xFF), ((p_bl_info->version >> 16) & 0xFF));
 
 #ifdef ENABLE_MODBUS
 	tty_printf("Modbus ");

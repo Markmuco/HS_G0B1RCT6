@@ -1406,10 +1406,17 @@ static void isr_handler(const sci_hdl_t hdl)
 	// clear the RS485 transmitter send
 	if (hdl->dir_port != NULL)
 	{
-		if ((isrflags & USART_ISR_TC) != RESET)
+		//if ((isrflags & USART_ISR_TC) != RESET)
+
+        // Transmission is fully complete (shift register empty)
+		if ((isrflags & USART_ISR_TC) && (cr1its & USART_CR1_TCIE))
 		{
 			HAL_GPIO_WritePin(hdl->dir_port, hdl->dir_pin, GPIO_PIN_RESET); // transmitter off
-			CLEAR_BIT(hdl->handle->Instance->CR1, USART_CR1_TCIE); // Clear transmission complete
+	        // 👉 Clear the interrupt flag:
+			CLEAR_BIT(hdl->handle->Instance->ICR, USART_ICR_TCCF);
+	        // 👉 Optional: disable TC interrupt to avoid repeated firing
+			CLEAR_BIT(hdl->handle->Instance->CR1, USART_CR1_TCIE);
+
 		}
 	}
 #endif
@@ -1463,6 +1470,8 @@ static void isr_handler(const sci_hdl_t hdl)
 			{
 				HAL_GPIO_WritePin(hdl->dir_port, hdl->dir_pin, GPIO_PIN_SET); // transmitter on
 				SET_BIT(hdl->handle->Instance->CR1, USART_CR1_TCIE); // Set transmission complete IRQ
+			    for (uint32_t i = 0; i < 1000; i++)
+			        __NOP();  // or just empty loop
 			}
 #endif
 			c = hdl->tx_queue->buf[hdl->tx_queue->out_index & hdl->tx_queue->size_mask];

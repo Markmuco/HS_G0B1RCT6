@@ -42,6 +42,7 @@
 #include "build_display.h"
 #include "external_io.h"
 #include "protection.h"
+#include "can_functions.h"
 #ifdef ENABLE_MODBUS
 #include "modbus_cmd.h"
 #endif
@@ -172,7 +173,7 @@
  - modbus uses also 16 targets
  - more modbus commands
  7.00
- - moving to 256K micro and used Sampa for SUN and MOON calculation
+ - moving to 256K micro and used Sampa for SUN and MOON calculation, CAN and Modbus (RS485)
 
  *
  */
@@ -277,7 +278,7 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 
 	// set protection level 1
-	SetRDPLevel1();
+//	SetRDPLevel1();
 	__enable_irq();
 
 	wdt_clr();
@@ -409,6 +410,14 @@ int main(void)
 
 #ifdef ENABLE_MODBUS
 		process_modbus_slave();
+
+//		char ch;
+//		if (sci2_getch(&ch))
+//		{
+//			sci2_putc(ch);
+//			sci1_putc(ch);
+//
+//		}
 #endif
 
 	}
