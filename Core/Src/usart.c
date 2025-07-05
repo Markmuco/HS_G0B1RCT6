@@ -325,9 +325,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 
-void MX_USART2_UART_DeInit(void)
+void MX_USART6_UART_DeInit(void)
 {
-	HAL_UART_DeInit(&huart2);
+	HAL_UART_DeInit(&huart6);
 }
 
 /* USER CODE END 1 */

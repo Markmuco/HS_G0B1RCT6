@@ -53,7 +53,8 @@ void set_protection(void)
 	tty_printf("Serial number [%u] PUT ROM THIS IN ROMTABLE\r\n", flash.stm_serial);
 	tty_printf("<<<<<<<<<<Set protection NO USER PROGRAM>>>>>>>>>>>>>\r\n");
 
-	WriteStruct2Flash(&flash, sizeof(hw_info_t));
+	if (WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t)))
+		tty_printf("Error saving flash");
 }
 
 /*!

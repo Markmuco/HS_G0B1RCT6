@@ -60,7 +60,7 @@ uint8_t gps_process(location_t * location)
 		set_rtc(time_date);
 		gps_power(false);
 
-		MX_USART2_UART_DeInit();
+		MX_USART6_UART_DeInit();
 
 		cold_start = false;
 	}
@@ -76,7 +76,7 @@ uint8_t gps_process(location_t * location)
 		override_gps_sync = false;
 		gps_power(false);
 		override_gps_sync = false;
-		MX_USART2_UART_DeInit();
+		MX_USART6_UART_DeInit();
 
 		cold_start = false;
 	}
@@ -93,7 +93,7 @@ uint8_t gps_process(location_t * location)
 			tty_printf("GPS receiver on\r\n");
 			gps_power(true);
 			HAL_Delay(20);
-			MX_USART2_UART_Init();
+			MX_USART6_UART_Init();
 		}
 	}
 
