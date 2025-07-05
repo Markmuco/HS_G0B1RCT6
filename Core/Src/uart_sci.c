@@ -56,7 +56,7 @@
 
 #if FLEXIBLE_CAN
 #include "can_functions.h"
-#include "canq.h"
+#include "fdcan.h"
 #endif
 #if (SCI_CFG_USB_INCLUDED)
 #if (SCI_USB_DEVICE)
@@ -1017,43 +1017,37 @@ bool sci_can_keyboard(char c) // Keyboard input comes from CAN bus
 bool sci_can_putc(char c)
 {
 	// send CAN data packet 8 bytes or rest
-	return can_send_msg(ID_SH_TX, 1, (uint8_t *) &c, CAN_RTR_DATA);
+	return can_send_msg(ID_SH_TX, 1, (uint8_t *) &c);
 }
 
 bool sci_can_puts(char *str)
 {
 	int n = strlen(str);
-	uint16_t free;
 	int a;
 
 	for (a = 0; a < (n / CAN_DATASIZE); a++)
 	{
-		free = can_tx_free();
-		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+		FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+		can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE]);
 	}
 
-	free = can_tx_free();
-	if (free)
-		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+	FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+	can_send_msg(ID_SH_TX, (n % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE]);
 	return true;
 }
 
 bool sci_can_putsn(char *str, uint16_t len)
 {
-	uint16_t free;
 	int a;
 
 	for (a = 0; a < (len / CAN_DATASIZE); a++)
 	{
-		free = can_tx_free();
-		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+		FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+		can_send_msg(ID_SH_TX, CAN_DATASIZE,(uint8_t *) &str[a * CAN_DATASIZE]);
 	}
 
-	free = can_tx_free();
-	if (free)
-		can_send_msg(ID_SH_TX, (len % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE], CAN_RTR_DATA);
+	FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+	can_send_msg(ID_SH_TX, (len % CAN_DATASIZE),(uint8_t *) &str[a * CAN_DATASIZE]);
 	return true;
 }
 
@@ -1064,7 +1058,6 @@ bool sci_can_printf(const char *format, ...)
 	uint8_t buffer[S_BUF_SIZE];
 	int n;
 	int a = 0;
-	uint16_t free;
 
 	va_start(ap, format);
 	n = vsnprintf((char*) buffer, S_BUF_SIZE, format, ap);
@@ -1072,14 +1065,12 @@ bool sci_can_printf(const char *format, ...)
 
 	for (a = 0; a < (n / CAN_DATASIZE); a++)
 	{
-		free = can_tx_free();
-		if (free)
-			can_send_msg(ID_SH_TX, CAN_DATASIZE, &buffer[a * CAN_DATASIZE], CAN_RTR_DATA);
+		FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+		can_send_msg(ID_SH_TX, CAN_DATASIZE, &buffer[a * CAN_DATASIZE]);
 	}
 
-	free = can_tx_free();
-	if (free)
-		can_send_msg(ID_SH_TX, (n % CAN_DATASIZE), &buffer[a * CAN_DATASIZE], CAN_RTR_DATA);
+	FDCAN_WaitForTxFifoSpace(&hfdcan1, 100);
+	can_send_msg(ID_SH_TX, (n % CAN_DATASIZE), &buffer[a * CAN_DATASIZE]);
 	return true;
 }
 #if USE_RS485>0
@@ -1089,7 +1080,8 @@ bool sci_can_rxq_busy(void)
 }
 bool sci_can_txq_busy(void)
 {
-	return (can_tx_free() != CAN_TX_BUF_SIZE-1);
+	return 0;
+	//return (can_tx_free() != CAN_TX_BUF_SIZE-1);
 }
 #endif
 #if FLEXIBLE_CAN
@@ -1410,6 +1402,25 @@ static void isr_handler(const sci_hdl_t hdl)
 	sci_cb_args_t args;
 	uint8_t c;
 
+#if USE_RS485>0
+	// clear the RS485 transmitter send
+	if (hdl->dir_port != NULL)
+	{
+		//if ((isrflags & USART_ISR_TC) != RESET)
+
+        // Transmission is fully complete (shift register empty)
+		if ((isrflags & USART_ISR_TC) && (cr1its & USART_CR1_TCIE))
+		{
+			HAL_GPIO_WritePin(hdl->dir_port, hdl->dir_pin, GPIO_PIN_RESET); // transmitter off
+	        // 👉 Clear the interrupt flag:
+			CLEAR_BIT(hdl->handle->Instance->ICR, USART_ICR_TCCF);
+	        // 👉 Optional: disable TC interrupt to avoid repeated firing
+			CLEAR_BIT(hdl->handle->Instance->CR1, USART_CR1_TCIE);
+
+		}
+	}
+#endif
+
 	/* If no error occurs */
 	errorflags = (isrflags & (uint32_t) (USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE));
 	if (errorflags == RESET)
@@ -1454,6 +1465,15 @@ static void isr_handler(const sci_hdl_t hdl)
 	{
 		if (hdl->tx_queue->in_index != hdl->tx_queue->out_index)
 		{
+#if USE_RS485>0
+			if (hdl->dir_port != NULL)
+			{
+				HAL_GPIO_WritePin(hdl->dir_port, hdl->dir_pin, GPIO_PIN_SET); // transmitter on
+				SET_BIT(hdl->handle->Instance->CR1, USART_CR1_TCIE); // Set transmission complete IRQ
+			    for (uint32_t i = 0; i < 1000; i++)
+			        __NOP();  // or just empty loop
+			}
+#endif
 			c = hdl->tx_queue->buf[hdl->tx_queue->out_index & hdl->tx_queue->size_mask];
 			__DMB();
 			hdl->tx_queue->out_index++;

@@ -78,8 +78,8 @@
 #if USE_RS485>0
 #define	USART1_DIR_PORT				NULL
 #define	USART1_DIR_PIN				0
-#define	USART2_DIR_PORT				NULL
-#define	USART2_DIR_PIN				0
+#define	USART2_DIR_PORT				DIR6_GPIO_Port
+#define	USART2_DIR_PIN				DIR6_Pin
 #define	USART3_DIR_PORT				NULL
 #define	USART3_DIR_PIN				0
 #define	USART4_DIR_PORT				NULL
@@ -87,8 +87,8 @@
 #define	USART5_DIR_PORT				NULL
 #define	USART5_DIR_PIN				0
 #define	USART6_DIR_PORT				NULL
-#define	USART6_DIR_PIN				DIR6_Pin
-#define	USART7_DIR_PORT				DIR6_GPIO_Port
+#define	USART6_DIR_PIN				0
+#define	USART7_DIR_PORT				NULL
 #define	USART7_DIR_PIN				0
 #define	USART8_DIR_PORT				NULL
 #define	USART8_DIR_PIN				0

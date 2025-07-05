@@ -128,15 +128,18 @@ extern vars_t vars;
 
 #define APP_KEY   	(0xAA55AA55)
 #define VERSION   	(0x0700FFFA)
+#define CAN_SERIAL  (0x20250013)
 
 #define WAIT_KEY  	(0x55AA55AA)
 #define WAIT_KEY_1	(0x55AA5501) // Wait by usart1
 #define WAIT_KEY_2	(0x55AA5502) // Wait by usart2
 #define WAIT_KEY_3	(0x55AA5503) // Wait by usart3
+#define CAN_KEY		(0x112255AA)
 
 #define CRASH_KEY 	(0x55AA55CC)
 
 #define RAM_KEY   	(0x20000000) // RAM address
+#define RAM_SERIAL	(0x20000004)
 
 #define KEY_STOP  	(0x55AA55AA)
 

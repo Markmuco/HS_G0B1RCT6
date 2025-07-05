@@ -279,6 +279,8 @@ int main(void)
 
 	__enable_irq();
 
+	FDCAN_Config();
+
 	wdt_clr();
 
 	init_sci();
