@@ -17,7 +17,7 @@ static FLASH_EraseInitTypeDef EraseInitStruct;
 static uint32_t GetBank(uint32_t Addr);
 
 
-#if 1
+#if 0
 
 HAL_StatusTypeDef stm32_flash_erase(uint32_t start, uint32_t size)
 {
@@ -119,7 +119,7 @@ HAL_StatusTypeDef stm32_flash_erase(uint32_t start, uint32_t size)
 	EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
 	EraseInitStruct.Page = FirstPage;
 	EraseInitStruct.NbPages = NbOfPages;
-	EraseInitStruct.Banks = FLASH_BANK_1;
+	EraseInitStruct.Banks = FLASH_BANK_2;
 
 	HAL_FLASH_Unlock();
 

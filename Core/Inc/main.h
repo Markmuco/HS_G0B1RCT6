@@ -105,12 +105,12 @@ extern vars_t vars;
 #define DIR6_GPIO_Port GPIOB
 #define MID_Y_Pin GPIO_PIN_15
 #define MID_Y_GPIO_Port GPIOB
-#define EN_X_Pin GPIO_PIN_7
-#define EN_X_GPIO_Port GPIOC
+#define DIR_Y_Pin GPIO_PIN_6
+#define DIR_Y_GPIO_Port GPIOC
 #define MID_X_Pin GPIO_PIN_15
 #define MID_X_GPIO_Port GPIOA
-#define EN_Y_Pin GPIO_PIN_9
-#define EN_Y_GPIO_Port GPIOC
+#define DIR_X_Pin GPIO_PIN_8
+#define DIR_X_GPIO_Port GPIOC
 #define LCD_DB7_Pin GPIO_PIN_3
 #define LCD_DB7_GPIO_Port GPIOB
 #define LCD_RS_Pin GPIO_PIN_4
@@ -149,11 +149,11 @@ extern vars_t vars;
 #define GPS_0			HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_SET)
 #define GPS_1			HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_RESET)
 
-//#define DIR_X_0			HAL_GPIO_WritePin(DIR_X_GPIO_Port, DIR_X_Pin, GPIO_PIN_SET)
-//#define DIR_X_1			HAL_GPIO_WritePin(DIR_X_GPIO_Port, DIR_X_Pin, GPIO_PIN_RESET)
-//
-//#define DIR_Y_0			HAL_GPIO_WritePin(DIR_Y_GPIO_Port, DIR_Y_Pin, GPIO_PIN_SET)
-//#define DIR_Y_1			HAL_GPIO_WritePin(DIR_Y_GPIO_Port, DIR_Y_Pin, GPIO_PIN_RESET)
+#define DIR_X_0			HAL_GPIO_WritePin(DIR_X_GPIO_Port, DIR_X_Pin, GPIO_PIN_SET)
+#define DIR_X_1			HAL_GPIO_WritePin(DIR_X_GPIO_Port, DIR_X_Pin, GPIO_PIN_RESET)
+
+#define DIR_Y_0			HAL_GPIO_WritePin(DIR_Y_GPIO_Port, DIR_Y_Pin, GPIO_PIN_SET)
+#define DIR_Y_1			HAL_GPIO_WritePin(DIR_Y_GPIO_Port, DIR_Y_Pin, GPIO_PIN_RESET)
 
 // not used, for powering on the GPS pin is set to input with pull down, the display crapped because of the inrush peak
 #define GPS_0_OFF			HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_SET)

@@ -52,7 +52,7 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(nGPS_EZN_GPIO_Port, nGPS_EZN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, nGPS_EZN_Pin|DIR_Y_Pin|DIR_X_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DIS_BRIDGE_GPIO_Port, DIS_BRIDGE_Pin, GPIO_PIN_SET);
@@ -62,11 +62,8 @@ void MX_GPIO_Init(void)
                           |LCD_DB7_Pin|LCD_RS_Pin|LCD_E_Pin|LCD_RW_Pin
                           |LCD_BACK_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, EN_X_Pin|EN_Y_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pins : nGPS_EZN_Pin EN_X_Pin EN_Y_Pin */
-  GPIO_InitStruct.Pin = nGPS_EZN_Pin|EN_X_Pin|EN_Y_Pin;
+  /*Configure GPIO pins : nGPS_EZN_Pin DIR_Y_Pin DIR_X_Pin */
+  GPIO_InitStruct.Pin = nGPS_EZN_Pin|DIR_Y_Pin|DIR_X_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

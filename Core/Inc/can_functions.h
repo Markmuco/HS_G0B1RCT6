@@ -11,7 +11,7 @@
 #include "../../../Project_Gateway/inc/can_id.h"
 
 #define BOOTLOADER			(0) // This is the bootloader else application
-#define SHELL				(1) // Include shell CAN commands
+#define SHELL				(0) // Include shell CAN commands
 
 #define INRQ 1
 #define INAK 1

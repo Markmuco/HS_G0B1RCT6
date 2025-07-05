@@ -662,7 +662,7 @@ static void soft_start_stop(int32_t target_x, int32_t target_y, int16_t soft)
 
 		if (actual_x > target_x)
 			actual_x--;
-#if 0
+#if 1
 		if (actual_x > 0)
 			DIR_X_1;
 		else
@@ -679,7 +679,7 @@ static void soft_start_stop(int32_t target_x, int32_t target_y, int16_t soft)
 		if (actual_y > target_y)
 			actual_y--;
 
-#if 0
+#if 1
 		if (actual_y > 0)
 			DIR_Y_1;
 		else
