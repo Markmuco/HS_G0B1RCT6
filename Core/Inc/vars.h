@@ -74,7 +74,7 @@
 #define VERTICAL			2
 
 #define						ENABLE_MODBUS
-#define MOON_OFF			0xFF00
+#define FOLLOW_MOON_OFF		0xFF00
 
 typedef enum
 {

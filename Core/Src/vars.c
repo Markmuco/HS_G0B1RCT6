@@ -34,11 +34,11 @@ void factory(hw_info_t * hwinfo)
 	// set back the serial
 	hwinfo->stm_serial = remember_stm_serial;
 
-	hwinfo->hysteresis.x = 5;
-	hwinfo->hysteresis.y = 5;
+	hwinfo->hysteresis.x = 10;
+	hwinfo->hysteresis.y = 10;
 	hwinfo->pid.repeat_ms = 5;
 	hwinfo->pid.i = 40;		// ms
-	hwinfo->pid.p = 500;	// 1000 = 1.000
+	hwinfo->pid.p = 600;	// 1000 = 1.000
 	hwinfo->pid.d = 0;		// not used
 
 	hwinfo->pid.softstart = 500; // ms
@@ -61,7 +61,7 @@ void factory(hw_info_t * hwinfo)
 	hwinfo->track_interval = 10; // seconds
 	hwinfo->max_windpulse = 0x00; // no maxwind
 	hwinfo->sun_down_angle = 0;
-	hwinfo->moonend_mod = MOON_OFF;
+	hwinfo->moonend_mod = FOLLOW_MOON_OFF;
 
 	// copy to real location
 	WriteStruct2Flash(hwinfo, sizeof(hw_info_t));

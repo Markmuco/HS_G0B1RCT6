@@ -26,6 +26,7 @@
 #include "gps.h"
 #include "gpio.h"
 #include "external_io.h"
+#include "hd44780.h"
 
 #if LOGIN_ENABLE>0
 #include "md5.h"
@@ -1259,7 +1260,7 @@ static void sh_show(char * argv)
 	tty_printf(" GPS receiver %s valid for %d.%02dh\r\n", isGPS_ON ? "ON" : "OFF", gps_remain_valid() / 60, gps_remain_valid() % 60);
 	tty_printf(" Location latitude  %3.3f' longitude %3.3f'\r\n", vars.hwinfo.home_location.latitude, vars.hwinfo.home_location.longitude);
 	tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
-	if (vars.hwinfo.moonend_mod != MOON_OFF)
+	if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
 		tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
 
 	x = (float) (vars.eevar.actual_motor.x + vars.hwinfo.hw_offset.x) / vars.hwinfo.steps.x;
@@ -1299,7 +1300,7 @@ static void sh_show(char * argv)
 		tty_printf(" MaxWind              = %d\r\n", vars.hwinfo.max_windpulse);
 	else
 		tty_printf(" MaxWind              = OFF\r\n");
-	if (vars.hwinfo.moonend_mod == MOON_OFF)
+	if (vars.hwinfo.moonend_mod == FOLLOW_MOON_OFF)
 		tty_printf(" Moon tracking        disabeled\r\n");
 	else
 		tty_printf(" Moon end time        %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
@@ -1554,7 +1555,7 @@ static void sh_moonend(char * argv)
 
 		if (strncmp(argv, "off", 3) == 0)
 		{
-			vars.hwinfo.moonend_mod = MOON_OFF;
+			vars.hwinfo.moonend_mod = FOLLOW_MOON_OFF;
 			tty_printf("Set moon tracking off\r\n");
 			WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t));
 			return;
@@ -1575,7 +1576,12 @@ static void sh_moonend(char * argv)
 			tty_printf("Use Moonend xx:xx or 'off'\r\n");
 	}
 	else
-		tty_printf("Moon end time %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
+	{
+		if (vars.hwinfo.moonend_mod == FOLLOW_MOON_OFF)
+			tty_printf("moonendtime off\r\n");
+		else
+			tty_printf("Moon end time %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
+	}
 }
 
 /*!

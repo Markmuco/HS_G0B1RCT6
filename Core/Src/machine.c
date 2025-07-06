@@ -294,7 +294,7 @@ void machine_process(void)
 	case ST_TRACK_TARGET_16:
 
 //		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
-		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != MOON_OFF) && vars.moonpos.elevation > 0))
+		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && vars.moonpos.elevation > 0))
 			show_screen = LCD_FOLLOW_TARGET;
 		else
 			show_screen = LCD_SUNDOWN;
@@ -306,6 +306,7 @@ void machine_process(void)
 			if (timer_elapsed(vars.tracking_tmr))
 			{
 				timer_start(vars.tracking_tmr, vars.hwinfo.track_interval * 1000, NULL);
+				// Sun set?
 				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
 				{
 					time_stamp();
@@ -316,7 +317,7 @@ void machine_process(void)
 				}
 				else
 				{
-					if ((vars.hwinfo.moonend_mod != MOON_OFF) && !stop_moontracking)
+					if ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && !stop_moontracking)
 					{
 						time_stamp();
 						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
@@ -388,7 +389,7 @@ void machine_process(void)
 				}
 				else
 				{
-					if ((vars.hwinfo.moonend_mod != MOON_OFF) && !stop_moontracking)
+					if ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && !stop_moontracking)
 					{
 						time_stamp();
 						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
