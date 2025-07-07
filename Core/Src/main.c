@@ -357,7 +357,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 		wdt_clr();
 
-		printf_bridge_fault();
+	//	printf_bridge_fault();
 
 		if (vars.gps_debug)
 		{

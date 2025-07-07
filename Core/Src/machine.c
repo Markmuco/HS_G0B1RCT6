@@ -39,7 +39,8 @@ void machine_process(void)
 	static uint8_t old_minute;
 	static bool old_out_of_range = false;
 	static bool sundown_parking = false;
-	static bool stop_moontracking = false;
+	static bool stop_moon_by_mod = false;
+	static bool parking_after_moontracking = false;
 
 	time_date_t time_date;
 	motorpos_t tg;
@@ -86,27 +87,42 @@ void machine_process(void)
 		st_main_mode = ST_WIND_STOP;
 	}
 
-	// In tracking mode and sun count the minutes, check voltage
-	if ((st_main_mode < ST_STOP) && (vars.sunpos.elevation > vars.hwinfo.sun_down_angle) && (!vars.out_of_range))
+	// In tracking busy?
+	if ((st_main_mode < ST_STOP) && (!vars.out_of_range))
 	{
-		// Minute:
-		if (timer_elapsed(minute_counter_tmr))
+		if (vars.sunpos.elevation > vars.hwinfo.sun_down_angle)
 		{
-			// add minute counter
-			timer_start(minute_counter_tmr, MINUTE, NULL);
-			vars.eevar.tracking_minutes++;
+			// Minute:
+			if (timer_elapsed(minute_counter_tmr))
+			{
+				// add minute counter
+				timer_start(minute_counter_tmr, MINUTE, NULL);
+				vars.eevar.tracking_minutes++;
+			}
+
+			// Seconde, read hardware
+			if (timer_elapsed(second_counter_tmr))
+			{
+				timer_start(second_counter_tmr, SECOND, NULL);
+				if ((read_adapter() < LOW_VOLTAGE) && (st_main_mode != ST_LOW_VCC))
+				{
+					restore_main_mode = st_main_mode;
+					st_main_mode = ST_LOW_VCC;
+					time_stamp();
+					tty_printf("Voltage %d.%d nok\r\n", read_adapter() / 1000, (read_adapter() % 1000) / 100);
+				}
+			}
 		}
 
-		// Seconde, read hardware
-		if (timer_elapsed(second_counter_tmr))
+		// In tracking mode and Moon count the minutes, check voltage
+		if ((vars.moonpos.elevation > vars.hwinfo.sun_down_angle) && vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF && !stop_moon_by_mod)
 		{
-			timer_start(second_counter_tmr, SECOND, NULL);
-			if ((read_adapter() < LOW_VOLTAGE) && (st_main_mode != ST_LOW_VCC))
+			// Minute:
+			if (timer_elapsed(minute_counter_tmr))
 			{
-				restore_main_mode = st_main_mode;
-				st_main_mode = ST_LOW_VCC;
-				time_stamp();
-				tty_printf("Voltage %d.%d nok\r\n", read_adapter() / 1000, (read_adapter() % 1000) / 100);
+				// add minute counter
+				timer_start(minute_counter_tmr, MINUTE, NULL);
+				vars.eevar.moon_minutes++;
 			}
 		}
 	}
@@ -122,32 +138,51 @@ void machine_process(void)
 	// Calculation of sun position
 	if (timer_elapsed(vars.calc_sun_tmr))
 	{
-		timer_start(vars.calc_sun_tmr, vars.hwinfo.track_interval * 1000, NULL);
+		timer_start(vars.calc_sun_tmr, mTRACK_INTERVAL_S, NULL);
 		suncalc(vars.hwinfo.home_location, time_date, &vars.sunpos, &vars.moonpos);
 
-		if (((!old_out_of_range && vars.out_of_range) || (vars.sunpos.elevation < mSUN_DOWN_ANGLE && !sundown_parking)) && (vars.gps_decode == DECODING_RDY) && (st_main_mode != ST_STOP) )
+		if ((vars.gps_decode == DECODING_RDY) && (st_main_mode != ST_STOP))
 		{
-			sundown_parking = true;
+			if ((!old_out_of_range && vars.out_of_range) || (vars.sunpos.elevation < mSUN_DOWN_ANGLE && !sundown_parking))
+			{
+				sundown_parking = true;
 
-			time_stamp();
-			tty_printf("%s Parking in %d seconds\r\n", vars.sunpos.elevation < mSUN_DOWN_ANGLE ? "Sundown" : "Out of range", OUTOF_RANGE_PARK_T / 1000);
+				time_stamp();
+				tty_printf("%s Parking in %d seconds\r\n", vars.sunpos.elevation < mSUN_DOWN_ANGLE ? "Sunset" : "Out of range", OUTOF_RANGE_PARK_T / 1000);
 
-			if (do_parking_tmr == NO_TIMER)
-				do_parking_tmr = timer_get();
+				if (do_parking_tmr == NO_TIMER)
+					do_parking_tmr = timer_get();
 
-			timer_start(do_parking_tmr, OUTOF_RANGE_PARK_T, NULL);
+				timer_start(do_parking_tmr, OUTOF_RANGE_PARK_T, NULL);
+			}
+
+			if (vars.moonpos.elevation < mSUN_DOWN_ANGLE && vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF && parking_after_moontracking)
+			{
+				parking_after_moontracking = false;
+
+				time_stamp();
+				tty_printf("Lunarset Parking in %d seconds\r\n", OUTOF_RANGE_PARK_T / 1000);
+
+				if (do_parking_tmr == NO_TIMER)
+					do_parking_tmr = timer_get();
+
+				timer_start(do_parking_tmr, OUTOF_RANGE_PARK_T, NULL);
+			}
+
+			old_out_of_range = vars.out_of_range;
 		}
-		old_out_of_range = vars.out_of_range;
 	}
 
-	// restoring memory status, out of range paring and sundown parking
+	// restoring memory status, out of range parking and sundown parking
 	if ((!vars.out_of_range) && (vars.sunpos.elevation > mSUN_DOWN_ANGLE))
 	{
 		timer_free(&do_parking_tmr);
 		sundown_parking = false;
+		parking_after_moontracking = false;
+		stop_moon_by_mod = false;
 	}
 
-	// The actual paring function
+	// The actual parking function
 	if (timer_elapsed(do_parking_tmr))
 	{
 		timer_free(&do_parking_tmr);
@@ -259,7 +294,7 @@ void machine_process(void)
 			// screen: Track sun
 			if (timer_elapsed(vars.tracking_tmr))
 			{
-				timer_start(vars.tracking_tmr, vars.hwinfo.track_interval * 1000, NULL);
+				timer_start(vars.tracking_tmr, mTRACK_INTERVAL_S, NULL);
 				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
 				{
 					time_stamp();
@@ -276,6 +311,7 @@ void machine_process(void)
 
 		break;
 
+	case ST_TRACK_MANUAL:
 	case ST_TRACK_TARGET_1:
 	case ST_TRACK_TARGET_2:
 	case ST_TRACK_TARGET_3:
@@ -293,9 +329,8 @@ void machine_process(void)
 	case ST_TRACK_TARGET_15:
 	case ST_TRACK_TARGET_16:
 
-//		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
-		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && vars.moonpos.elevation > 0))
-			show_screen = LCD_FOLLOW_TARGET;
+		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && vars.moonpos.elevation > mSUN_DOWN_ANGLE))
+			show_screen = (st_main_mode == ST_TRACK_MANUAL) ? LCD_FOLLOW_MANUAL : LCD_FOLLOW_TARGET;
 		else
 			show_screen = LCD_SUNDOWN;
 
@@ -305,7 +340,7 @@ void machine_process(void)
 			// screen: Track target
 			if (timer_elapsed(vars.tracking_tmr))
 			{
-				timer_start(vars.tracking_tmr, vars.hwinfo.track_interval * 1000, NULL);
+				timer_start(vars.tracking_tmr, mTRACK_INTERVAL_S, NULL);
 				// Sun set?
 				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
 				{
@@ -313,27 +348,28 @@ void machine_process(void)
 					tty_printf("Sun %s\r\n", print_mode_name(vars.eevar.main_mode));
 					vars.out_of_range = follow_target(vars.sunpos);
 					vars.max_pwm = vars.hwinfo.max_pwm;
-					stop_moontracking = false;
+
 				}
 				else
 				{
-					if ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && !stop_moontracking)
+					if (vars.moonpos.elevation > mSUN_DOWN_ANGLE && vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF && !stop_moon_by_mod)
 					{
 						time_stamp();
 						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
 
 						vars.out_of_range = follow_target(vars.moonpos);
 						vars.max_pwm = vars.hwinfo.max_pwm;
+						parking_after_moontracking = true;
 
 						if (time_date.mod == vars.hwinfo.moonend_mod)
 						{
 							tty_printf("Moon stoptime %d:%02d\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
-							stop_moontracking = true;
+							stop_moon_by_mod = true;
 							vars.out_of_range = true;
 						}
 					}
 					else
-						tty_printf("Track target, pdown\r\n");
+						tty_printf("Track target, down\r\n");
 				}
 			}
 		}
@@ -368,51 +404,7 @@ void machine_process(void)
 			st_main_mode = ST_WAIT_GPS;
 		break;
 
-	case ST_TRACK_MANUAL:
 
-		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
-			show_screen = LCD_FOLLOW_MANUAL;
-		else
-			show_screen = LCD_SUNDOWN;
-
-		if (vars.gps_decode == 100)
-		{
-			if (timer_elapsed(vars.tracking_tmr))
-			{
-				timer_start(vars.tracking_tmr, vars.hwinfo.track_interval * 1000, NULL);
-				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
-				{
-					time_stamp();
-					tty_printf("%s\r\n", print_mode_name(vars.eevar.main_mode));
-					vars.out_of_range = follow_target(vars.sunpos);
-					vars.max_pwm = vars.hwinfo.max_pwm;
-				}
-				else
-				{
-					if ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && !stop_moontracking)
-					{
-						time_stamp();
-						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
-
-						vars.out_of_range = follow_target(vars.moonpos);
-						vars.max_pwm = vars.hwinfo.max_pwm;
-
-						if (time_date.mod == vars.hwinfo.moonend_mod)
-						{
-							tty_printf("Moon stoptime %d:%02d\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
-							stop_moontracking = true;
-							vars.out_of_range = true;
-						}
-					}
-					else
-						tty_printf("Track manual, pdown\r\n");
-				}
-			}
-		}
-		else
-			st_main_mode = ST_WAIT_GPS;
-
-		break;
 
 	case ST_HAL_TIMEOUT:
 	case ST_END_TIMEOUT:
@@ -710,9 +702,19 @@ void cmd_savetarget(uint8_t target)
 {
 	motorpos_t tg;
 
-	calc_target_pos(&vars.hwinfo, vars.sunpos, vars.eevar.actual_motor, &tg);
-	vars.hwinfo.target[target - 1].pos = tg;
-	tty_printf("Save target %d, %d %d\r\n", target, tg.x, tg.y);
+	if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+	{
+		calc_target_pos(&vars.hwinfo, vars.sunpos, vars.eevar.actual_motor, &tg);
+		vars.hwinfo.target[target - 1].pos = tg;
+		tty_printf("Sun save target %d, %d %d\r\n", target, tg.x, tg.y);
+	}
+	else if (vars.moonpos.elevation > mSUN_DOWN_ANGLE)
+	{
+		calc_target_pos(&vars.hwinfo, vars.moonpos, vars.eevar.actual_motor, &tg);
+		vars.hwinfo.target[target - 1].pos = tg;
+		tty_printf("Moon save target %d, %d %d\r\n", target, tg.x, tg.y);
+	}
+
 	vars.about_to_save = TG_SAVED;
 	vars.eevar.main_mode = ST_SAVED;
 	if (WriteStruct2Flash(&vars.hwinfo, sizeof(hw_info_t)))

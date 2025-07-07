@@ -62,8 +62,8 @@ all:
 main-build: HS_G0B1RCT6.elf secondary-outputs
 
 # Tool invocations
-HS_G0B1RCT6.elf HS_G0B1RCT6.map: $(OBJS) $(USER_OBJS) C:\Ac6\Workspace\HS_G0B1RCT6\STM32G0B1RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "HS_G0B1RCT6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Ac6\Workspace\HS_G0B1RCT6\STM32G0B1RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="HS_G0B1RCT6.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+HS_G0B1RCT6.elf HS_G0B1RCT6.map: $(OBJS) $(USER_OBJS) C:\ac6\Workspace\HS_G0B1RCT6\STM32G0B1RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "HS_G0B1RCT6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\ac6\Workspace\HS_G0B1RCT6\STM32G0B1RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="HS_G0B1RCT6.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -85,7 +85,7 @@ clean:
 post-build:
 	arm-none-eabi-objcopy -O binary "HS_G0B1RCT6.elf" "HS_G0B1RCT6.bin"
 	arm-none-eabi-size "HS_G0B1RCT6.elf"
-	C:/Ac6/Workspace/HS_G0B1RCT6/writeCRC.exe "HS_G0B1RCT6.bin"
+	C:/ac6/Workspace/HS_G0B1RCT6/writeCRC.exe "HS_G0B1RCT6.bin"
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

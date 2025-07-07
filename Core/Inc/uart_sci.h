@@ -213,7 +213,7 @@ bool sci1_getch(char *c);
 bool sci1_putsn(char *str, uint16_t len);
 bool sci1_putc(char c);
 bool sci1_puts(char *str);
-bool sci1_printf(char *format, ...);
+bool sci1_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci1_rxq_busy(void);
 bool sci1_txq_busy(void);
@@ -229,7 +229,7 @@ bool sci2_getch(char *c);
 bool sci2_putsn(char *str, uint16_t len);
 bool sci2_putc(char c);
 bool sci2_puts(char *str);
-bool sci2_printf(char *format, ...);
+bool sci2_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci2_rxq_busy(void);
 bool sci2_txq_busy(void);
@@ -245,7 +245,7 @@ bool sci3_getch(char *c);
 bool sci3_putsn(char *str, uint16_t len);
 bool sci3_putc(char c);
 bool sci3_puts(char *str);
-bool sci3_printf(char *format, ...);
+bool sci3_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci3_rxq_busy(void);
 bool sci3_txq_busy(void);
@@ -261,7 +261,7 @@ bool sci4_getch(char *c);
 bool sci4_putsn(char *str, uint16_t len);
 bool sci4_putc(char c);
 bool sci4_puts(char *str);
-bool sci4_printf(char *format, ...);
+bool sci4_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci4_rxq_busy(void);
 bool sci4_txq_busy(void);
@@ -277,7 +277,7 @@ bool sci5_getch(char *c);
 bool sci5_putsn(char *str, uint16_t len);
 bool sci5_putc(char c);
 bool sci5_puts(char *str);
-bool sci5_printf(char *format, ...);
+bool sci5_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci5_rxq_busy(void);
 bool sci5_txq_busy(void);
@@ -293,7 +293,7 @@ bool sci6_getch(char *c);
 bool sci6_putsn(char *str, uint16_t len);
 bool sci6_putc(char c);
 bool sci6_puts(char *str);
-bool sci6_printf(char *format, ...);
+bool sci6_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci6_rxq_busy(void);
 bool sci6_txq_busy(void);
@@ -309,7 +309,7 @@ bool sci7_getch(char *c);
 bool sci7_putsn(char *str, uint16_t len);
 bool sci7putc(char c);
 bool sci7puts(char *str);
-bool sci7_printf(char *format, ...);
+bool sci7_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci7_rxq_busy(void);
 bool sci7_txq_busy(void);
@@ -325,7 +325,7 @@ bool sci8_getch(char *c);
 bool sci8_putsn(char *str, uint16_t len);
 bool sci8_putc(char c);
 bool sci8_puts(char *str);
-bool sci8_printf(char *format, ...);
+bool sci8_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci8_rxq_busy(void);
 bool sci8_txq_busy(void);
@@ -341,7 +341,7 @@ bool sci9_getch(char *c);
 bool sci9_putsn(char *str, uint16_t len);
 bool sci9_putc(char c);
 bool sci9_puts(char *str);
-bool sci9_printf(char *format, ...);
+bool sci9_printf(const char *format, ...);
 #if USE_RS485>0
 bool sci9_rxq_busy(void);
 bool sci9_txq_busy(void);
@@ -357,7 +357,7 @@ bool sci_lpch1_getch(char *c);
 bool sci_lpch1_putsn(char *str, uint16_t len);
 bool sci_lpch1_putc(char c);
 bool sci_lpch1_puts(char *str);
-bool sci_lpch1_printf(char *format, ...);
+bool sci_lpch1_printf(const char *format, ...);
 #if FLEXIBLE_SCI_LPCH1
 void shell_use_sci_lpch1(void);
 #endif

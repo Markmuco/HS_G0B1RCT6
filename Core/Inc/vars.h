@@ -73,7 +73,7 @@
 #define HORIZONTAL			1
 #define VERTICAL			2
 
-#define						ENABLE_MODBUS
+//#define						ENABLE_MODBUS
 #define FOLLOW_MOON_OFF		0xFF00
 
 typedef enum
@@ -272,16 +272,16 @@ typedef struct
 	motorpos_t target;	// position of the target
 	main_mode_st main_mode;
 
-	uint32_t serial;				// Serial key
+	uint32_t moon_minutes;			// minutes of Moon tracking
 	// logging
-	uint32_t tracking_minutes;		// minutes of tracking
+	uint32_t tracking_minutes;		// minutes of Sun tracking
 	uint32_t bootcounter;			// number of boots
 	uint16_t set_zero_x;			// times the zero limit has reached
 	uint16_t set_zero_y;
-	uint16_t error_hal_xa;			// times the error occurred
-	uint16_t error_hal_xb;
-	uint16_t error_hal_ya;
-	uint16_t error_hal_yb;
+	uint16_t error_hal_x;			// times the error occurred
+	uint16_t error_hal_y;
+	uint16_t error_end_x;
+	uint16_t error_end_y;
 
 	uint32_t crc;
 }i2c_ee_t;
@@ -366,6 +366,7 @@ typedef struct
 	motorpos_t deviation;		// difference real and calculated zero point
 	target_t about_to_save;
 	hw_info_t hwinfo;
+	uint32_t spare2;	// overrun flash function?
 	main_mode_st store_main_mode;
 	coord_t sunpos;
 	coord_t moonpos;

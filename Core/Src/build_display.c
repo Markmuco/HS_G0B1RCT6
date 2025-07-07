@@ -81,6 +81,12 @@ void process_display(void)
 			snprintf(buf, sizeof(buf), "Hours: %ld.%02ld", vars.eevar.tracking_minutes / 60, vars.eevar.tracking_minutes % 60);
 			HD44780_Puts(0, 2, buf);
 
+			if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
+			{
+				snprintf(buf, sizeof(buf), "Lunar Hours: %ld.%02ld", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+				HD44780_Puts(0, 3, buf);
+			}
+
 			break;
 
 		case LCD_WAIT_GPS:

@@ -91,8 +91,8 @@ static void sh_save_sun(char * argv);
 static void sh_save_target(char * argv);
 static void sh_save_park(char * argv);
 static void sh_pwmfreq(char *argv);
-static void sh_ee_write(char * argv);
-static void sh_ee_read(char * argv);
+//static void sh_ee_write(char * argv);
+//static void sh_ee_read(char * argv);
 static void sh_scan(char *argv);
 static void sh_phase(char *argv);
 static void sh_desync(char * argv);
@@ -102,6 +102,7 @@ static void sh_posy(char * argv);
 static void sh_gps_debug(char * argv);
 static void sh_targettime(char * argv);
 static void sh_moonend(char * argv);
+static void sh_eeprom(char * argv);
 
 static void printlist(target_properties_t tg, uint8_t tgnr);
 
@@ -169,8 +170,8 @@ static const cmd_tbl_t cmd_tbl[] =
 		{ "stop", "Stop motors", sh_stop },
 		{ "hang", "test", sh_hang },
 
-		{ "eewrite", "test", sh_ee_write },
-		{ "eeread", "test", sh_ee_read },
+//		{ "eewrite", "test", sh_ee_write },
+//		{ "eeread", "test", sh_ee_read },
 		{ "scan", "test", sh_scan },
 		{ "pwmfreq", "set pwm", sh_pwmfreq },
 		{ "phase", "measure phase", sh_phase },
@@ -192,6 +193,7 @@ static const cmd_tbl_t cmd_tbl[] =
 		{ "calymin", "calibrate Y Min", sh_ymin },
 		{ "targettime", "Target time", sh_targettime },
 		{ "moonendtime", "stop time", sh_moonend },
+		{ "eeprom", "Show stored data", sh_eeprom },
 
 
 
@@ -1241,7 +1243,7 @@ static void sh_time(char * argv)
 
 	tty_printf("%s sync: %d%%\r\n", vars.gps_system == SYS_GPS ? "GPS" : "GLONASS", vars.gps_decode);
 
-	can_send_msg(100, 4, &dt);
+//	can_send_msg(100, 4, &dt);
 
 }
 
@@ -1257,6 +1259,9 @@ static void sh_show(char * argv)
 	float x, y;
 	tty_printf("\r\nNow-----------------------------------------\r\n");
 	tty_printf(" hours      = %d.%02d boots: %d\r\n", vars.eevar.tracking_minutes / 60, vars.eevar.tracking_minutes % 60, vars.eevar.bootcounter);
+	if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
+		tty_printf(" Lunarhours = %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+
 	tty_printf(" GPS receiver %s valid for %d.%02dh\r\n", isGPS_ON ? "ON" : "OFF", gps_remain_valid() / 60, gps_remain_valid() % 60);
 	tty_printf(" Location latitude  %3.3f' longitude %3.3f'\r\n", vars.hwinfo.home_location.latitude, vars.hwinfo.home_location.longitude);
 	tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
@@ -1582,6 +1587,21 @@ static void sh_moonend(char * argv)
 		else
 			tty_printf("Moon end time %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
 	}
+}
+
+static void sh_eeprom(char * argv)
+{
+	tty_printf("EEPROM\r\n");
+	tty_printf("SunHours    %d.%02d\r\n", vars.eevar.tracking_minutes / 60, vars.eevar.tracking_minutes % 60);
+	tty_printf("LunarHours  %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+
+	tty_printf("Boots       %d\r\n", vars.eevar.bootcounter);
+	tty_printf("error_end_x %d\r\n", vars.eevar.error_end_x);
+	tty_printf("error_end_y %d\r\n", vars.eevar.error_end_y);
+	tty_printf("error_hal_x %d\r\n", vars.eevar.error_hal_x);
+	tty_printf("error_hal_y %d\r\n", vars.eevar.error_hal_y);
+	tty_printf("set_zero_x  %d\r\n", vars.eevar.set_zero_x);
+	tty_printf("set_zero_y  %d\r\n", vars.eevar.set_zero_y);
 }
 
 /*!
@@ -2025,6 +2045,13 @@ static void sh_hours(char *argv)
 		{
 			vars.eevar.bootcounter = 0;
 			vars.eevar.tracking_minutes = 0;
+			vars.eevar.moon_minutes = 0;
+			vars.eevar.error_end_x = 0;
+			vars.eevar.error_end_y = 0;
+			vars.eevar.error_hal_x = 0;
+			vars.eevar.error_hal_y = 0;
+			vars.eevar.set_zero_x = 0;
+			vars.eevar.set_zero_y = 0;
 			tty_printf("Reset tracking time\r\n");
 
 			if (WriteStruct2eerom(vars.eevar))
@@ -2356,46 +2383,46 @@ static void sh_save_target(char * argv)
 		tty_printf("Invalid argveter 1..16\r\n");
 }
 
-static void sh_ee_write(char * argv)
-{
-	int32_t val = 0;
-	uint8_t data[254];
-	uint8_t block = 0;
-
-	if (shell_next_argv(&argv))
-	{
-		block = strtol(argv, 0, 16);
-
-		if (shell_next_argv(&argv))
-			val = strtol(argv, 0, 16);
-
-		memset(data, val, sizeof(data));
-
-		tty_printf("addr 0x%02X result:%d\r\n", block, e2p_write(block, data, 10));
-	}
-}
-
-static void sh_ee_read(char * argv)
-{
-	int32_t val;
-	uint8_t data[254];
-
-	if (shell_next_argv(&argv))
-	{
-		val = strtol(argv, 0, 10);
-
-		memset(data, 0x00, sizeof(data));
-
-		tty_printf("read block %d result %d\r\n", val, e2p_read(0, data, sizeof(data)));
-
-		for (int var = 0; var < sizeof(data); ++var)
-		{
-			tty_printf("0x%02X ", data[var]);
-		}
-		tty_printf("\r\n");
-
-	}
-}
+//static void sh_ee_write(char * argv)
+//{
+//	int32_t val = 0;
+//	uint8_t data[254];
+//	uint8_t block = 0;
+//
+//	if (shell_next_argv(&argv))
+//	{
+//		block = strtol(argv, 0, 16);
+//
+//		if (shell_next_argv(&argv))
+//			val = strtol(argv, 0, 16);
+//
+//		memset(data, val, sizeof(data));
+//
+//		tty_printf("addr 0x%02X result:%d\r\n", block, e2p_write(block, data, 10));
+//	}
+//}
+//
+//static void sh_ee_read(char * argv)
+//{
+//	int32_t val;
+//	uint8_t data[254];
+//
+//	if (shell_next_argv(&argv))
+//	{
+//		val = strtol(argv, 0, 10);
+//
+//		memset(data, 0x00, sizeof(data));
+//
+//		tty_printf("read block %d result %d\r\n", val, e2p_read(0, data, sizeof(data)));
+//
+//		for (int var = 0; var < sizeof(data); ++var)
+//		{
+//			tty_printf("0x%02X ", data[var]);
+//		}
+//		tty_printf("\r\n");
+//
+//	}
+//}
 
 
 static void sh_save_park(char * argv)

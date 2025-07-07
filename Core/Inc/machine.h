@@ -11,6 +11,7 @@
 #define st_main_mode				vars.eevar.main_mode
 #define show_screen					vars.screen_lcd
 #define mSUN_DOWN_ANGLE				vars.hwinfo.sun_down_angle
+#define mTRACK_INTERVAL_S			(vars.hwinfo.track_interval * 1000)
 
 #define OUTOF_RANGE_PARK_T			2000 // ms
 

@@ -332,6 +332,7 @@ bool motor_process(void)
 		tty_printf(" ERROR HAL XA\r\n");
 		timer_free(&hal_xa_tmr);
 		vars.eevar.main_mode = ST_HAL_TIMEOUT;
+		vars.eevar.error_hal_x++;
 		vars.error_status |= ERR_HAL_XA;
 	}
 
@@ -342,6 +343,7 @@ bool motor_process(void)
 		tty_printf(" ERROR HAL XB\r\n");
 		timer_free(&hal_xb_tmr);
 		vars.eevar.main_mode = ST_HAL_TIMEOUT;
+		vars.eevar.error_hal_x++;
 		vars.error_status |= ERR_HAL_XB;
 	}
 
@@ -352,6 +354,7 @@ bool motor_process(void)
 		tty_printf(" ERROR HAL YA\r\n");
 		timer_free(&hal_ya_tmr);
 		vars.eevar.main_mode = ST_HAL_TIMEOUT;
+		vars.eevar.error_hal_y++;
 		vars.error_status |= ERR_HAL_YA;
 	}
 
@@ -362,6 +365,7 @@ bool motor_process(void)
 		tty_printf(" ERROR HAL YB\r\n");
 		timer_free(&hal_yb_tmr);
 		vars.eevar.main_mode = ST_HAL_TIMEOUT;
+		vars.eevar.error_hal_y++;
 		vars.error_status |= ERR_HAL_YB;
 	}
 
@@ -372,6 +376,7 @@ bool motor_process(void)
 
 		timer_free(&end_x_tmr);
 		vars.eevar.main_mode = ST_END_TIMEOUT;
+		vars.eevar.error_end_x++;
 		vars.error_status |= ERR_END_X;
 	}
 
@@ -381,6 +386,7 @@ bool motor_process(void)
 
 		timer_free(&end_y_tmr);
 		vars.eevar.main_mode = ST_END_TIMEOUT;
+		vars.eevar.error_end_y++;
 		vars.error_status |= ERR_END_Y;
 	}
 
@@ -414,6 +420,7 @@ bool motor_process(void)
 
 				// Measured vs real position
 				deviation_x = feedback_x;
+				vars.eevar.set_zero_x++;
 
 				tty_printf("XZero at %d\r\n", feedback_x);
 				feedback_x = 0;
@@ -427,6 +434,7 @@ bool motor_process(void)
 				timer_start(ignore_switch_x_tmr, debounce, NULL);
 
 				max_x = feedback_x;
+				vars.eevar.set_zero_x++;
 
 				save_flash = true;
 				// New position after ramp down
@@ -462,6 +470,7 @@ bool motor_process(void)
 
 				// Measured vs real position
 				deviation_y = feedback_y;
+				vars.eevar.set_zero_y++;
 
 				tty_printf("YZero at %d\r\n", feedback_y);
 				feedback_y = 0;
@@ -475,6 +484,7 @@ bool motor_process(void)
 				timer_start(ignore_switch_y_tmr, debounce, NULL);
 
 				max_y = feedback_y;
+				vars.eevar.set_zero_y++;
 				save_flash = true;
 
 				// New position after ramp down

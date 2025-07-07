@@ -73,6 +73,7 @@ bool can_send_msg(can_id_t id, uint8_t len, uint8_t *txdata)
 		/* Transmission request Error */
 		Error_Handler();
 	}
+	return true;
 }
 
 /**

@@ -478,7 +478,7 @@ bool sci1_txq_busy(void)
 	return (tx_queue_busy(SCI_CH1));
 }
 #endif
-bool sci1_printf(char *format, ...)
+bool sci1_printf(const char *format, ...)
 {
 	char str[255 + 1];
 	va_list args;
@@ -534,7 +534,7 @@ bool sci2_txq_busy(void)
 	return (tx_queue_busy(SCI_CH2));
 }
 #endif
-bool sci2_printf(char *format, ...)
+bool sci2_printf(const char *format, ...)
 {
 	char str[255 + 1];
 	va_list args;
@@ -589,7 +589,7 @@ bool sci3_txq_busy(void)
 	return (tx_queue_busy(SCI_CH3));
 }
 #endif
-bool sci3_printf(char *format, ...)
+bool sci3_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -644,7 +644,7 @@ bool sci4_txq_busy(void)
 	return (tx_queue_busy(SCI_CH4));
 }
 #endif
-bool sci4_printf(char *format, ...)
+bool sci4_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -699,7 +699,7 @@ bool sci5_txq_busy(void)
 	return (tx_queue_busy(SCI_CH5));
 }
 #endif
-bool sci5_printf(char *format, ...)
+bool sci5_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -754,7 +754,7 @@ bool sci6_txq_busy(void)
 	return (tx_queue_busy(SCI_CH6));
 }
 #endif
-bool sci6_printf(char *format, ...)
+bool sci6_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -809,7 +809,7 @@ bool sci7_txq_busy(void)
 	return (tx_queue_busy(SCI_CH7));
 }
 #endif
-bool sci7_printf(char *format, ...)
+bool sci7_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -864,7 +864,7 @@ bool sci8_txq_busy(void)
 	return (tx_queue_busy(SCI_CH8));
 }
 #endif
-bool sci8_printf(char *format, ...)
+bool sci8_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -921,7 +921,7 @@ bool sci9_txq_busy(void)
 	return (tx_queue_busy(SCI_CH9));
 }
 #endif
-bool sci9_printf(char *format, ...)
+bool sci9_printf(const char *format, ...)
 {
 	char str[255+1];
 	va_list args;
@@ -967,7 +967,7 @@ bool sci_lpch1_putsn(char *str, uint16_t len)
 {
 	return (sci_putsn(SCI_LPCH1, (uint8_t*) str, len));
 }
-bool sci_lpch1_printf(char *format, ...)
+bool sci_lpch1_printf(const char *format, ...)
 {
 	char str[255 + 1];
 	va_list args;
