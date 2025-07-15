@@ -29,6 +29,9 @@
 #define KEY_STOP  	(0x55AA55AA)
 
 
+#define MOON_OPTION	(1)
+
+
 #define ERR_NONE	0x00
 #define ERR_HAL_XA	0x01
 #define ERR_HAL_XB	0x02

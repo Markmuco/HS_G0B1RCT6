@@ -18,6 +18,7 @@
 #include "adc.h"
 #include "vector.h"
 
+static void restore_target_pos( uint32_t mode);
 static uint16_t wait_calc_newposiotion = false;
 
 /*!
@@ -80,15 +81,15 @@ void machine_process(void)
 	}
 
 	// windpulses overflow
-	if ((vars.wind_ppm > vars.hwinfo.max_windpulse) && (st_main_mode < ST_STOP) && vars.hwinfo.max_windpulse != 0)
+	if ((vars.wind_ppm > vars.hwinfo.max_windpulse) && (mMAIN_MODE < ST_STOP) && vars.hwinfo.max_windpulse != 0)
 	{
 		tty_printf("Max wind parking\r\n");
 		vars.goto_motor = vars.hwinfo.parkposition;
-		st_main_mode = ST_WIND_STOP;
+		mMAIN_MODE = ST_WIND_STOP;
 	}
 
 	// In tracking busy?
-	if ((st_main_mode < ST_STOP) && (!vars.out_of_range))
+	if ((mMAIN_MODE < ST_STOP) && (!vars.out_of_range))
 	{
 		if (vars.sunpos.elevation > vars.hwinfo.sun_down_angle)
 		{
@@ -104,10 +105,10 @@ void machine_process(void)
 			if (timer_elapsed(second_counter_tmr))
 			{
 				timer_start(second_counter_tmr, SECOND, NULL);
-				if ((read_adapter() < LOW_VOLTAGE) && (st_main_mode != ST_LOW_VCC))
+				if ((read_adapter() < LOW_VOLTAGE) && (mMAIN_MODE != ST_LOW_VCC))
 				{
-					restore_main_mode = st_main_mode;
-					st_main_mode = ST_LOW_VCC;
+					restore_main_mode = mMAIN_MODE;
+					mMAIN_MODE = ST_LOW_VCC;
 					time_stamp();
 					tty_printf("Voltage %d.%d nok\r\n", read_adapter() / 1000, (read_adapter() % 1000) / 100);
 				}
@@ -128,9 +129,9 @@ void machine_process(void)
 	}
 
 	// was Factory settings loaded?
-	if ((vars.hwinfo.maximum.x == DEFAULT_MAX || vars.hwinfo.maximum.y == DEFAULT_MAX || vars.hwinfo.hw_offset.x == 0 || vars.hwinfo.hw_offset.x == 0) && (st_main_mode <= ST_STOP))
+	if ((vars.hwinfo.maximum.x == DEFAULT_MAX || vars.hwinfo.maximum.y == DEFAULT_MAX || vars.hwinfo.hw_offset.x == 0 || vars.hwinfo.hw_offset.x == 0) && (mMAIN_MODE <= ST_STOP))
 	{
-		st_main_mode = ST_INVALID_PARAMETERS;
+		mMAIN_MODE = ST_INVALID_PARAMETERS;
 	}
 
 	rtc_get(&time_date);
@@ -141,7 +142,7 @@ void machine_process(void)
 		timer_start(vars.calc_sun_tmr, mTRACK_INTERVAL_S, NULL);
 		suncalc(vars.hwinfo.home_location, time_date, &vars.sunpos, &vars.moonpos);
 
-		if ((vars.gps_decode == DECODING_RDY) && (st_main_mode != ST_STOP))
+		if ((vars.gps_decode == DECODING_RDY) && (mMAIN_MODE != ST_STOP))
 		{
 			if ((!old_out_of_range && vars.out_of_range) || (vars.sunpos.elevation < mSUN_DOWN_ANGLE && !sundown_parking))
 			{
@@ -161,7 +162,7 @@ void machine_process(void)
 				parking_after_moontracking = false;
 
 				time_stamp();
-				tty_printf("Lunarset Parking in %d seconds\r\n", OUTOF_RANGE_PARK_T / 1000);
+				tty_printf("Moonset parking in %d seconds\r\n", OUTOF_RANGE_PARK_T / 1000);
 
 				if (do_parking_tmr == NO_TIMER)
 					do_parking_tmr = timer_get();
@@ -211,9 +212,9 @@ void machine_process(void)
 		}
 	}
 
-	if (st_main_mode != old_st_main_mode)
+	if (mMAIN_MODE != old_st_main_mode)
 	{
-		old_st_main_mode = st_main_mode;
+		old_st_main_mode = mMAIN_MODE;
 		time_stamp();
 		tty_printf("state [%s]\r\n", print_mode_name(vars.eevar.main_mode));
 	}
@@ -221,7 +222,7 @@ void machine_process(void)
 	/*
 	 * ************ Main Machine ************
 	 */
-	switch (st_main_mode)
+	switch (mMAIN_MODE)
 	{
 	case ST_INIT:
 		show_screen = LCD_WELCOME;
@@ -234,7 +235,7 @@ void machine_process(void)
 		if (timer_elapsed(welcome_tmr))
 		{
 			timer_free(&welcome_tmr);
-			st_main_mode = ST_WAIT_GPS;
+			mMAIN_MODE = ST_WAIT_GPS;
 		}
 
 		break;
@@ -289,7 +290,7 @@ void machine_process(void)
 		else
 			show_screen = LCD_SUNDOWN;
 
-		if (vars.gps_decode == 100)
+		if (vars.gps_decode == DECODING_RDY)
 		{
 			// screen: Track sun
 			if (timer_elapsed(vars.tracking_tmr))
@@ -307,7 +308,7 @@ void machine_process(void)
 			}
 		}
 		else
-			st_main_mode = ST_WAIT_GPS;
+			mMAIN_MODE = ST_WAIT_GPS;
 
 		break;
 
@@ -330,12 +331,12 @@ void machine_process(void)
 	case ST_TRACK_TARGET_16:
 
 		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || ((vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF) && vars.moonpos.elevation > mSUN_DOWN_ANGLE))
-			show_screen = (st_main_mode == ST_TRACK_MANUAL) ? LCD_FOLLOW_MANUAL : LCD_FOLLOW_TARGET;
+			show_screen = (mMAIN_MODE == ST_TRACK_MANUAL) ? LCD_FOLLOW_MANUAL : LCD_FOLLOW_TARGET;
 		else
 			show_screen = LCD_SUNDOWN;
 
 // only decoding is valid GPS
-		if (vars.gps_decode == 100)
+		if (vars.gps_decode == DECODING_RDY)
 		{
 			// screen: Track target
 			if (timer_elapsed(vars.tracking_tmr))
@@ -346,6 +347,8 @@ void machine_process(void)
 				{
 					time_stamp();
 					tty_printf("Sun %s\r\n", print_mode_name(vars.eevar.main_mode));
+					// set target position 1..5 for sun
+					restore_target_pos(SUN);
 					vars.out_of_range = follow_target(vars.sunpos);
 					vars.max_pwm = vars.hwinfo.max_pwm;
 
@@ -357,6 +360,8 @@ void machine_process(void)
 						time_stamp();
 						tty_printf("Moon %s\r\n", print_mode_name(vars.eevar.main_mode));
 
+						// set target position 6..10 for moon
+						restore_target_pos(MOON);
 						vars.out_of_range = follow_target(vars.moonpos);
 						vars.max_pwm = vars.hwinfo.max_pwm;
 						parking_after_moontracking = true;
@@ -374,7 +379,7 @@ void machine_process(void)
 			}
 		}
 		else
-			st_main_mode = ST_WAIT_GPS;
+			mMAIN_MODE = ST_WAIT_GPS;
 
 		break;
 
@@ -387,24 +392,25 @@ void machine_process(void)
 		show_screen = LCD_MOVE_REMOTE;
 
 		// only decoding is valid GPS
-		if (vars.gps_decode == 100)
+		if (vars.gps_decode == DECODING_RDY)
 		{
 			if (isBRIGE_OFF && --wait_calc_newposiotion == 0)
 			{
 				// auto follow this target
-				calc_target_pos(&vars.hwinfo, vars.sunpos, vars.eevar.actual_motor, &tg);
+				if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+					calc_target_pos(&vars.hwinfo, vars.sunpos, vars.eevar.actual_motor, &tg);
+				else
+					calc_target_pos(&vars.hwinfo, vars.moonpos, vars.eevar.actual_motor, &tg);
 
 				vars.eevar.target = tg;
-				st_main_mode = ST_TRACK_MANUAL;
+				mMAIN_MODE = ST_TRACK_MANUAL;
 				time_stamp();
 				tty_printf("Use new manual target\r\n");
 			}
 		}
 		else
-			st_main_mode = ST_WAIT_GPS;
+			mMAIN_MODE = ST_WAIT_GPS;
 		break;
-
-
 
 	case ST_HAL_TIMEOUT:
 	case ST_END_TIMEOUT:
@@ -415,7 +421,6 @@ void machine_process(void)
 		vars.goto_motor = vars.eevar.actual_motor;
 
 		break;
-
 
 	case ST_LOW_VCC:
 		show_screen = LCD_LOW_VCC;
@@ -428,7 +433,7 @@ void machine_process(void)
 			timer_start(second_counter_tmr, SECOND, NULL);
 			if (read_adapter() > RESTORE_VOLTAGE)
 			{
-				st_main_mode = restore_main_mode;
+				mMAIN_MODE = restore_main_mode;
 				tty_printf("Voltage %d.%d ok\r\n", read_adapter() / 1000, (read_adapter() % 1000) / 100);
 			}
 		}
@@ -509,6 +514,65 @@ void machine_process(void)
 
 	}
 
+}
+
+/*
+ *	restore_target_pos
+ *		&vars.eevar.target
+ *		st_main_mode
+ *		SUN / MOON
+ */
+
+static void restore_target_pos(uint32_t mode)
+{
+	uint16_t mem_pos = mMAIN_MODE - 2;
+
+
+	switch (mMAIN_MODE)
+	{
+	case ST_TRACK_TARGET_1: // 2
+	case ST_TRACK_TARGET_2:
+	case ST_TRACK_TARGET_3:
+	case ST_TRACK_TARGET_4:
+	case ST_TRACK_TARGET_5:
+		// We are in SUN mode switch to MOON?
+		if (mode == MOON)
+		{
+			// values available in MOON mode?
+			if (vars.hwinfo.target[mem_pos + 5].pos.x != 0)
+			{
+				mMAIN_MODE +=5;
+				mem_pos += 5;
+				vars.eevar.target = vars.hwinfo.target[mem_pos].pos;
+				tty_printf("switch to Moon mode target %d\r\n", mem_pos);
+			}
+		}
+
+		break;
+
+	case ST_TRACK_TARGET_6:
+	case ST_TRACK_TARGET_7:
+	case ST_TRACK_TARGET_8:
+	case ST_TRACK_TARGET_9:
+	case ST_TRACK_TARGET_10:
+		// We are in MON mode switch to SUN?
+		if (mode == SUN)
+		{
+			// values available in MOON mode?
+			if (vars.hwinfo.target[mem_pos - 5].pos.x != 0)
+			{
+				mMAIN_MODE -=5;
+				mem_pos -= 5;
+				vars.eevar.target = vars.hwinfo.target[mem_pos].pos;
+				tty_printf("switch to Sun mode target %d\r\n", mem_pos);
+			}
+		}
+
+		break;
+
+	default:
+		break;
+	}
 }
 
 /*!
@@ -711,7 +775,7 @@ void cmd_savetarget(uint8_t target)
 	else if (vars.moonpos.elevation > mSUN_DOWN_ANGLE)
 	{
 		calc_target_pos(&vars.hwinfo, vars.moonpos, vars.eevar.actual_motor, &tg);
-		vars.hwinfo.target[target - 1].pos = tg;
+		vars.hwinfo.target[target - 1 + 5].pos = tg;
 		tty_printf("Moon save target %d, %d %d\r\n", target, tg.x, tg.y);
 	}
 

@@ -101,7 +101,9 @@ static void sh_posx(char * argv);
 static void sh_posy(char * argv);
 static void sh_gps_debug(char * argv);
 static void sh_targettime(char * argv);
+#if MOON_OPTION>0
 static void sh_moonend(char * argv);
+#endif
 static void sh_eeprom(char * argv);
 
 static void printlist(target_properties_t tg, uint8_t tgnr);
@@ -140,7 +142,7 @@ static const cmd_tbl_t cmd_tbl[] =
 		/* USER CODE BEGIN 1 */
 
 		{ "time", "Get RTC time", sh_time },
-		{ "show", "argveters", sh_show },
+		{ "show", "parameter", sh_show },
 		{ "list", "List Targets", sh_list },
 		{ "factory", "Restore factory settings", sh_factory },
 		{ "stepsx", "Steps per degrees horizontal", sh_stepsx },
@@ -192,7 +194,9 @@ static const cmd_tbl_t cmd_tbl[] =
 		{ "calymax", "calibrate Y Max", sh_ymax },
 		{ "calymin", "calibrate Y Min", sh_ymin },
 		{ "targettime", "Target time", sh_targettime },
+#if MOON_OPTION>0
 		{ "moonendtime", "stop time", sh_moonend },
+#endif
 		{ "eeprom", "Show stored data", sh_eeprom },
 
 
@@ -822,7 +826,7 @@ static bool shell_strcmp(const char *s1, const char *s2)
 			return (true);
 	}
 
-	// MUR 22-5-2022 table must be ended and argveter follows
+	// MUR 22-5-2022 table must be ended and parameter follows
 	if ((*s1 == 0) && ((*s2 == ' ') || (*s2 == '\f') || (*s2 == '\n') || (*s2 == '\r') || (*s2 == '\t') || (*s2 == '\v')))
 			return (true);
 
@@ -1147,7 +1151,7 @@ static void shell_tabline_get(cmdline_obj_t *object)
 }
 
 /*!
- * \brief Browse pointer to next argveter
+ * \brief Browse pointer to next parameter
  *
  * \Parameters
  *
@@ -1260,13 +1264,23 @@ static void sh_show(char * argv)
 	tty_printf("\r\nNow-----------------------------------------\r\n");
 	tty_printf(" hours      = %d.%02d boots: %d\r\n", vars.eevar.tracking_minutes / 60, vars.eevar.tracking_minutes % 60, vars.eevar.bootcounter);
 	if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
-		tty_printf(" Lunarhours = %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+		tty_printf(" Moonhours  = %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
 
 	tty_printf(" GPS receiver %s valid for %d.%02dh\r\n", isGPS_ON ? "ON" : "OFF", gps_remain_valid() / 60, gps_remain_valid() % 60);
 	tty_printf(" Location latitude  %3.3f' longitude %3.3f'\r\n", vars.hwinfo.home_location.latitude, vars.hwinfo.home_location.longitude);
-	tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
-	if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
-		tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
+
+	if (vars.gps_decode == DECODING_RDY)
+	{
+		tty_printf(" Sun azimuth        %3.3f' elevation %3.3f'\r\n", vars.sunpos.azimuth, vars.sunpos.elevation);
+		if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
+			tty_printf(" Moon azimuth       %3.3f' elevation %3.3f'\r\n", vars.moonpos.azimuth, vars.moonpos.elevation);
+	}
+	else
+	{
+		tty_printf(" Sun azimuth ?\r\n");
+		if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
+			tty_printf(" Moon azimuth ?\r\n");
+	}
 
 	x = (float) (vars.eevar.actual_motor.x + vars.hwinfo.hw_offset.x) / vars.hwinfo.steps.x;
 	if (x > 360)
@@ -1376,7 +1390,7 @@ static void printlist(target_properties_t tg, uint8_t tgnr)
 {
 	if (tg.pos.x + tg.pos.y)
 	{
-		tty_printf("Target %2d Azimuth = %3.3f' Elevation = %3.3f'", tgnr + 1, ((float) tg.pos.x / vars.hwinfo.steps.x), ((float) tg.pos.y / vars.hwinfo.steps.y));
+		tty_printf("%s Target %2d Azimuth = %3.3f' Elevation = %3.3f'", (tgnr < 5) ? "Sun" : "Moon", tgnr + 1, ((float) tg.pos.x / vars.hwinfo.steps.x), ((float) tg.pos.y / vars.hwinfo.steps.y));
 		if (tg.mode != TIMED_OFF)
 		{
 			uint16_t mod = get_dst_correction(tg.mod, tg.mode);
@@ -1421,7 +1435,7 @@ static void sh_stepsx(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..10000");
+			tty_printf("parameter out of range 0..10000");
 	}
 	tty_printf("Steps per degrees X %d\r\n", vars.hwinfo.steps.x);
 }
@@ -1447,7 +1461,7 @@ static void sh_stepsy(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..10000");
+			tty_printf("parameter out of range 0..10000");
 	}
 	tty_printf("Steps per degrees Y %d\r\n", vars.hwinfo.steps.y);
 }
@@ -1473,7 +1487,7 @@ static void sh_hystx(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..10000");
+			tty_printf("parameter out of range 0..10000");
 	}
 	tty_printf("Hysteresis X %d\r\n", vars.hwinfo.hysteresis.x);
 }
@@ -1499,7 +1513,7 @@ static void sh_hysty(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..100");
+			tty_printf("parameter out of range 0..100");
 	}
 	tty_printf("Hysteresis Y %d\r\n", vars.hwinfo.hysteresis.y);
 }
@@ -1525,7 +1539,7 @@ static void sh_kp(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..100000\r\n");
+			tty_printf("parameter out of range 0..100000\r\n");
 	}
 	tty_printf("Kp %d.%03d\r\n", vars.hwinfo.pid.p / 1000, vars.hwinfo.pid.p % 1000);
 }
@@ -1541,7 +1555,7 @@ static void f_gps(void)
 
 }
 
-
+#if MOON_OPTION>0
 /*!
  * \brief This function finds a (partial) command in a table.
  *
@@ -1588,12 +1602,12 @@ static void sh_moonend(char * argv)
 			tty_printf("Moon end time %d:%02d (UTC)\r\n", vars.hwinfo.moonend_mod / 60, vars.hwinfo.moonend_mod % 60);
 	}
 }
-
+#endif
 static void sh_eeprom(char * argv)
 {
 	tty_printf("EEPROM\r\n");
 	tty_printf("SunHours    %d.%02d\r\n", vars.eevar.tracking_minutes / 60, vars.eevar.tracking_minutes % 60);
-	tty_printf("LunarHours  %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+	tty_printf("Moonhours   %d.%02d\r\n", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
 
 	tty_printf("Boots       %d\r\n", vars.eevar.bootcounter);
 	tty_printf("error_end_x %d\r\n", vars.eevar.error_end_x);
@@ -1732,7 +1746,7 @@ static void sh_ki(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..1000");
+			tty_printf("parameter out of range 0..1000");
 	}
 	tty_printf("Ki %d ms\r\n", vars.hwinfo.pid.i);
 }
@@ -1770,7 +1784,7 @@ static void sh_pidt(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..1000");
+			tty_printf("parameter out of range 0..1000");
 	}
 	tty_printf("PID Time %d ms\r\n", vars.hwinfo.pid.repeat_ms);
 }
@@ -1796,7 +1810,7 @@ static void sh_pids(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 1..5000ms");
+			tty_printf("parameter out of range 1..5000ms");
 	}
 	tty_printf("Softstart %d ms\r\n", vars.hwinfo.pid.softstart);
 }
@@ -1828,7 +1842,7 @@ static void sh_turnback(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 1.0 - 5.0\r\n");
+			tty_printf("parameter out of range 1.0 - 5.0\r\n");
 	}
 	tty_printf("Turning back %d.%d'\r\n", vars.hwinfo.turnback / 10, vars.hwinfo.turnback % 10);
 }
@@ -1855,7 +1869,7 @@ static void sh_debounce(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..5000");
+			tty_printf("parameter out of range 0..5000");
 	}
 	tty_printf("Debounce endswitch %d ms\r\n", vars.hwinfo.debounce);
 }
@@ -1883,7 +1897,7 @@ static void sh_minpwm(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..100");
+			tty_printf("parameter out of range 0..100");
 	}
 	tty_printf("Minimum pwm %d\r\n", vars.hwinfo.min_pwm);
 }
@@ -1909,9 +1923,9 @@ static void sh_sundown(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range -180..180");
+			tty_printf("parameter out of range -180..180");
 	}
-	tty_printf("Sundown angle %dº\r\n", vars.hwinfo.sun_down_angle);
+	tty_printf("Sundown angle %d'\r\n", vars.hwinfo.sun_down_angle);
 }
 
 
@@ -1936,7 +1950,7 @@ static void sh_maxwm(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 0..100");
+			tty_printf("parameter out of range 0..100");
 	}
 	tty_printf("Maximum pwm %d\r\n", vars.hwinfo.max_pwm);
 }
@@ -1962,7 +1976,7 @@ static void sh_windpulse(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 100..10000");
+			tty_printf("parameter out of range 100..10000");
 	}
 	tty_printf("Maximum windpulse %d per minute\r\n", vars.hwinfo.max_windpulse);
 
@@ -1993,7 +2007,7 @@ static void sh_contrast(char * argv)
 			set_contrast(vars.hwinfo.contrast);
 		}
 		else
-			tty_printf("argveter out of range 0..100");
+			tty_printf("parameter out of range 0..100");
 	}
 	tty_printf("Contrast %d\r\n", vars.hwinfo.contrast);
 }
@@ -2019,7 +2033,7 @@ static void sh_tracking(char * argv)
 				tty_printf("Error saving flash");
 		}
 		else
-			tty_printf("argveter out of range 1..10000");
+			tty_printf("parameter out of range 1..10000");
 	}
 	tty_printf("Tracking interval %d sec\r\n", vars.hwinfo.track_interval);
 }
@@ -2299,7 +2313,7 @@ static void sh_set_target(char * argv)
 			timer_free(&vars.calc_sun_tmr);
 		}
 		else
-			tty_printf("Invalid argveter 1..16\r\n");
+			tty_printf("Invalid parameter 1..16\r\n");
 	}
 	else
 		tty_printf("settarget 1..16\r\n");
@@ -2380,7 +2394,7 @@ static void sh_save_target(char * argv)
 		}
 	}
 	else
-		tty_printf("Invalid argveter 1..16\r\n");
+		tty_printf("Invalid parameter 1..16\r\n");
 }
 
 //static void sh_ee_write(char * argv)
@@ -2457,12 +2471,16 @@ void sh_ver(char *argv)
 	app_info_t *p_bl_info = (app_info_t*) Bootloader_info;
 
 	tty_printf("Bootloader %X.%02X\r\n", ((p_bl_info->version >> 24) & 0xFF), ((p_bl_info->version >> 16) & 0xFF));
-	sci2_printf("Bootloader %X.%02X\r\n", ((p_bl_info->version >> 24) & 0xFF), ((p_bl_info->version >> 16) & 0xFF));
 
 #ifdef ENABLE_MODBUS
 	tty_printf("Modbus ");
 #endif
+#if MOON_OPTION>0
+	tty_printf("Suntrack %lx.%02lx (%s %s) w/moon\r\n", ((c_app_info.version >> 24) & 0xFF), ((c_app_info.version >> 16) & 0xFF), c_app_info.build_date, c_app_info.build_time);
+#else
 	tty_printf("Suntrack %lx.%02lx (%s %s)\r\n", ((c_app_info.version >> 24) & 0xFF), ((c_app_info.version >> 16) & 0xFF), c_app_info.build_date, c_app_info.build_time);
+
+#endif
 
 
 

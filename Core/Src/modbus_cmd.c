@@ -116,7 +116,7 @@ uint16_t modbus_getvalue(uint16_t RegIndex)
 		break;
 
 	case CMD_GPS_VALID:
-		return (vars.gps_decode == 100);
+		return (vars.gps_decode == DECODING_RDY);
 		break;
 
 	case CMD_MAX_HOR_HIGH:

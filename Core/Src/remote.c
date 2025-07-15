@@ -348,11 +348,11 @@ void remote_ctrl_process(void)
 					break;
 
 				case KEY2_ON:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -363,16 +363,16 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 
 					break;
 
 				case KEY2_OFF:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -383,15 +383,15 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 					break;
 
 				case KEY3_ON:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -402,16 +402,16 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 
 					break;
 
 				case KEY3_OFF:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -422,16 +422,16 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 
 					break;
 
 				case KEY4_ON:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -442,16 +442,16 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 
 					break;
 
 				case KEY4_OFF:
-					if (vars.gps_decode == 100)
+					if (vars.gps_decode == DECODING_RDY)
 					{
 						if (out_learned_range(HORIZONTAL) || out_learned_range(VERTICAL))
 						{
-							st_main_mode = ST_INVALID_PARAMETERS;
+							mMAIN_MODE = ST_INVALID_PARAMETERS;
 						}
 						else
 						{
@@ -462,7 +462,7 @@ void remote_ctrl_process(void)
 						}
 					}
 					else
-						st_main_mode = ST_WAIT_GPS;
+						mMAIN_MODE = ST_WAIT_GPS;
 
 					break;
 

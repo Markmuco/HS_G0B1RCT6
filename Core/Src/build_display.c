@@ -83,7 +83,7 @@ void process_display(void)
 
 			if (vars.hwinfo.moonend_mod != FOLLOW_MOON_OFF)
 			{
-				snprintf(buf, sizeof(buf), "Lunar Hours: %ld.%02ld", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
+				snprintf(buf, sizeof(buf), "Moon Hrs: %ld.%02ld", vars.eevar.moon_minutes / 60, vars.eevar.moon_minutes % 60);
 				HD44780_Puts(0, 3, buf);
 			}
 
@@ -333,7 +333,7 @@ static void header(void)
 
 	if (vars.gps_decode == DECODING_RDY)
 	{
-		if (vars.sunpos.elevation > mSUN_DOWN_ANGLE)
+		if ((vars.sunpos.elevation > mSUN_DOWN_ANGLE) || (vars.hwinfo.moonend_mod == FOLLOW_MOON_OFF))
 			snprintf(buf, sizeof(buf), "SUN %7.2f %-7.2f", vars.sunpos.azimuth, vars.sunpos.elevation);
 		else
 			snprintf(buf, sizeof(buf), "MOON %7.2f %-7.2f", vars.moonpos.azimuth, vars.moonpos.elevation);

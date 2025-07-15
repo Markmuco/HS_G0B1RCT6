@@ -8,7 +8,7 @@
 #ifndef MACHINE_H_
 #define MACHINE_H_
 
-#define st_main_mode				vars.eevar.main_mode
+#define mMAIN_MODE					vars.eevar.main_mode
 #define show_screen					vars.screen_lcd
 #define mSUN_DOWN_ANGLE				vars.hwinfo.sun_down_angle
 #define mTRACK_INTERVAL_S			(vars.hwinfo.track_interval * 1000)
@@ -20,6 +20,9 @@
 
 #define MINUTE						60 * 1000 // minute in ms
 #define SECOND						1000 // second in ms
+
+#define SUN							0x02
+#define MOON						0x04
 
 void machine_process(void);
 void factory(hw_info_t * hwinfo);

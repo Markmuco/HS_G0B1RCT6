@@ -144,6 +144,10 @@ void init_vars(void)
 
 	}
 
+#if MOON_OPTION==0
+	vars.hwinfo.moonend_mod = FOLLOW_MOON_OFF;
+#endif
+
 	new_pwm_freq(vars.hwinfo.pwmfreq);
 
 	// compatible with new parameter
